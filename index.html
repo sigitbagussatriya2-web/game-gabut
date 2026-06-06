@@ -2,591 +2,139 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP FPS Labirin - Absolute Perfect Edition v9.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB_ESP | Cheat Mode v1.0</title>
     <style>
-        body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: sans-serif; user-select: none; touch-action: none; background: #000; }
-        canvas { display: block; width: 100%; height: 100%; }
-        
-        /* Crosshair Standar */
-        #crosshair {
-            position: absolute; top: 50%; left: 50%;
-            width: 6px; height: 6px; background: #00ff00;
-            border-radius: 50%; transform: translate(-50%, -50%);
-            pointer-events: none; z-index: 10;
-        }
-
-        /* Scope Overlays */
-        #scope-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 35%, rgba(0,0,0,0.95) 40%);
-            display: none; pointer-events: none; z-index: 12;
-        }
-        #sniper-lines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; pointer-events: none; z-index: 13;
-        }
-        #sniper-lines::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(255, 0, 0, 0.7); }
-        #sniper-lines::after { content: ''; position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: rgba(255, 0, 0, 0.7); }
-
-        #hud {
-            position: absolute; bottom: 15px; left: 15px;
-            color: white; background: rgba(0, 0, 0, 0.85);
-            padding: 12px; border-radius: 6px; pointer-events: none; z-index: 15;
-            font-size: 11px; border: 1px solid #333; line-height: 1.6;
-            min-width: 140px;
-        }
-
-        /* ANIMASI RAINBOW NEON */
-        @keyframes rainbowGlow {
-            0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
-            20% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; }
-            40% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; }
-            60% { border-color: #ffff00; box-shadow: 0 0 15px #ffff00; }
-            80% { border-color: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
-            100% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
-        }
-
-        /* RAINBOW NEON CIRCLE MOD MENU (TERKUNCI SECARA DEFAULT) */
-        #mod-menu-toggle {
-            position: absolute; top: 15px; left: 15px;
-            width: 55px; height: 55px; background: rgba(5, 5, 15, 0.9);
-            border: 3px solid #ff0055; border-radius: 50%;
-            color: white; font-weight: bold; font-size: 11px;
-            display: none; /* Hanya muncul via kode verifikasi */
-            justify-content: center; align-items: center;
-            cursor: pointer; z-index: 99; text-align: center;
-            animation: rainbowGlow 6s linear infinite;
-            text-shadow: 0 0 5px #fff;
-        }
-
-        #mod-menu-content {
-            position: absolute; top: 80px; left: 15px;
-            width: 200px; background: rgba(5, 5, 15, 0.95);
-            border: 2px solid #ff0055; border-radius: 8px;
-            color: white; padding: 12px; z-index: 98;
-            display: none;
-            animation: rainbowGlow 6s linear infinite;
-        }
-
-        /* PANEL SETTING GEAR (POJOK KANAN ATAS) - DAPAT DIAKSES SEMUA PLAYER */
-        #gear-toggle {
-            position: absolute; top: 15px; right: 15px;
-            width: 45px; height: 45px; background: rgba(20, 20, 30, 0.85);
-            border: 2px solid #00ffff; border-radius: 50%;
-            color: white; font-size: 22px; display: flex;
-            justify-content: center; align-items: center;
-            cursor: pointer; z-index: 99; box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-        }
-        #graphics-panel {
-            position: absolute; top: 70px; right: 15px;
-            background: rgba(10, 10, 15, 0.95); border: 1px solid #00ffff;
-            padding: 12px; border-radius: 6px; z-index: 98; display: none;
-            color: white; font-size: 11px; width: 160px;
-        }
-        .panel-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .panel-row select { background: #111; color: #fff; border: 1px solid #00ffff; padding: 3px; border-radius: 4px; font-size: 11px; outline: none; }
-
-        /* PANEL SCREEN SECURITY LOCK DI AWAL */
-        #security-lock {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 10, 0.98); z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .lock-box {
-            background: #111; border: 2px solid #ff0055; padding: 25px;
-            border-radius: 10px; text-align: center; box-shadow: 0 0 20px #ff0055;
-            max-width: 280px; width: 80%;
-        }
-        .lock-box input {
-            width: 90%; padding: 10px; margin: 15px 0 10px 0; background: #000;
-            border: 1px solid #ff0055; color: #00ff00; text-align: center;
-            font-weight: bold; font-size: 14px; border-radius: 4px; outline: none;
-        }
-        .lock-box button {
-            width: 100%; padding: 10px; margin-top: 5px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
-        }
-        .btn-premium { background: #ff0055; color: white; text-shadow: 0 0 3px #fff; }
-        .btn-guest { background: #222; color: #aaa; font-size: 11px; margin-top: 10px; border: 1px solid #444 !important; }
-
-        .menu-title { margin: 0 0 10px 0; text-align: center; font-size: 14px; font-weight: bold; color: #fff; letter-spacing: 1px; text-shadow: 0 0 4px #ff0055; }
-        .menu-item { margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .menu-item select, .menu-item button { 
-            background: #111; color: #fff; border: 1px solid #ff0055; 
-            padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold; outline: none;
-        }
-        .status-on { color: #00ff00 !important; border-color: #00ff00 !important; background: rgba(0,255,0,0.15) !important; }
-        .status-off { color: #ff3333 !important; border-color: #ff3333 !important; background: rgba(255,0,0,0.15) !important; }
-
-        /* Tombol Kontrol Layar */
-        .mobile-btn {
-            position: absolute; width: 62px; height: 62px;
-            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%; color: white; display: flex;
-            justify-content: center; align-items: center;
-            font-weight: bold; font-size: 11px; z-index: 80; touch-action: none;
-        }
-        .mobile-btn:active { background: rgba(255, 255, 255, 0.3); border-color: #ff0055; }
-        
-        #btn-shoot { right: 20px; bottom: 105px; width: 78px; height: 78px; background: rgba(255, 50, 50, 0.25); border-color: #ff3333; font-size: 12px; }
-        #btn-scope { right: 110px; bottom: 115px; }
-        #btn-jump { right: 25px; bottom: 25px; }
-        #btn-crouch { right: 110px; bottom: 25px; }
-
-        #joystick-zone {
-            position: absolute; left: 30px; bottom: 30px;
-            width: 105px; height: 105px; background: rgba(255,255,255,0.04);
-            border-radius: 50%; display: block; z-index: 80; border: 1px solid rgba(255,255,255,0.1);
-        }
-        #joystick-stick {
-            position: absolute; top: 37px; left: 37px;
-            width: 30px; height: 30px; background: rgba(255,255,255,0.6); border-radius: 50%;
-        }
+        body { margin: 0; padding: 0; background: #050505; color: #00ff00; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
+        .container { position: relative; width: 100vw; height: 100vh; }
+        video, canvas { position: absolute; top: 0; left: 0; transform: scaleX(-1); /* Efek cermin */ }
+        #status-bar { position: fixed; top: 10px; left: 10px; padding: 10px; background: rgba(0, 0, 0, 0.7); border: 1px solid #00ff00; z-index: 100; font-size: 14px; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-models/coco-ssd"></script>
 </head>
 <body>
 
-    <div id="security-lock">
-        <div class="lock-box">
-            <h3 style="color: #ff0055; margin: 0; letter-spacing: 1px;">SISTEM AKSES VIP</h3>
-            <p style="color: #888; font-size: 11px; margin: 5px 0 0 0;">Masukkan Key untuk mengaktifkan Fitur Mod</p>
-            <input type="text" id="redeem-input" placeholder="KODE REDEEM MOD">
-            <button id="btn-verify" class="btn-premium">LOG IN (VIP MODE)</button>
-            <button id="btn-guest-login" class="btn-guest">MASUK SEBAGAI TAMU (NORMAL)</button>
-        </div>
-    </div>
+<div id="status-bar">
+    [ SYSTEM ] ESP MODE: ACTIVE<br>
+    [ STATUS ] MODEL: LOADING...<br>
+    [ RADAR  ] TRACKING...
+</div>
 
-    <canvas id="gameCanvas"></canvas>
-    <div id="crosshair"></div>
-    <div id="scope-overlay"></div>
-    <div id="sniper-lines"></div>
+<div class="container">
+    <video id="webcam" width="640" height="480" autoplay muted playsinline></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+</div>
 
-    <div id="mod-menu-toggle">VIP<br>MOD</div>
+<script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const statusBar = document.getElementById('status-bar');
+    let model;
 
-    <div id="gear-toggle">⚙️</div>
-    <div id="graphics-panel">
-        <div class="panel-row">
-            <span>Grafik:</span>
-            <select id="graphics-select">
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM" selected>MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-            </select>
-        </div>
-        <div class="panel-row">
-            <span>Senjata:</span>
-            <select id="weapon-select">
-                <option value="AK47">AK-47</option>
-                <option value="M4A1">M4A1</option>
-                <option value="AWM">AWM (Sniper)</option>
-                <option value="M1887">M1887</option>
-                <option value="DEAGLE">D.EAGLE</option>
-                <option value="GROZA">GROZA ★</option>
-                <option value="M249">M249 (Rambo)</option>
-                <option value="M79">M79 (Launcher)</option>
-            </select>
-        </div>
-    </div>
+    // --- Konfigurasi Estetika ---
+    const ESP_COLOR_ENEMY = 'rgb(255, 0, 0)'; // Merah untuk 'musuh' (manusia)
+    const ESP_COLOR_INFO = 'rgb(255, 255, 255)'; // Putih untuk teks
+    const FONT_SETTINGS = '16px "Courier New"';
 
-    <div id="mod-menu-content">
-        <div class="menu-title">PRO CHEAT PANEL</div>
-        <div class="menu-item">
-            <span>Aimbot Target:</span>
-            <select id="aim-target-select"><option value="HEAD">HEAD</option><option value="BODY">BODY</option></select>
-        </div>
-        <div class="menu-item"><span>ESP Radar Box:</span><button id="btn-esp" class="status-off">OFF</button></div>
-        <div class="menu-item"><span>Magic Bullet:</span><button id="btn-magic" class="status-off">OFF</button></div>
-    </div>
+    // --- Konfigurasi Jarak ---
+    // Kalibrasi: Ukur tinggi piksel seseorang pada jarak 1 meter (misalnya, 200px)
+    const KNOWN_HEIGHT_CM = 170; // Tinggi rata-rata manusia
+    const FOCAL_LENGTH = 500; // Panjang fokus yang dikalibrasi (piksel pada 1m)
 
-    <div id="hud">
-        Darah Kita: <span id="player-hp" style="color:#00ff00; font-weight:bold;">100</span> HP<br>
-        Senjata: <span id="hud-weapon" style="color:#ff0055; font-weight:bold;">AK47</span><br>
-        Skor Kill: <span id="score" style="color:#00ff00; font-weight:bold;">0</span><br>
-        Engine FPS: <span id="fps-counter" style="color:#00ffff; font-weight:bold;">--</span> Hz
-    </div>
-
-    <div id="joystick-zone"><div id="joystick-stick"></div></div>
-    <div id="btn-shoot" class="mobile-btn">TEMBAK</div>
-    <div id="btn-scope" class="mobile-btn">SCOPE</div>
-    <div id="btn-jump" class="mobile-btn">LOMPAT</div>
-    <div id="btn-crouch" class="mobile-btn">JONGKOK</div>
-
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+    // 1. Setup Kamera
+    async function setupWebcam() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Peramban ini tidak mendukung akses kamera.');
+            return;
         }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { width: 640, height: 480 }, 
+                audio: false 
+            });
+            video.srcObject = stream;
+            return new Promise((resolve) => video.onloadedmetadata = () => resolve());
+        } catch (e) {
+            console.error('Akses kamera ditolak:', e);
+            statusBar.innerHTML = '[ ERR ] Kamera Gagal Diaktifkan';
+        }
+    }
 
-        let gameActive = false; 
-        let playerX = 2.5, playerY = 2.5;
-        let playerAngle = 0;
-        let playerHP = 100;
-        let score = 0;
-        let currentWeapon = "AK47";
-        let isScoped = false;
-        let cheatConfig = { aimTarget: "HEAD", espActive: false, magicBullet: false };
-        let audioCtx = null;
-        let isVerified = false; // Kunci mutlak keabsahan hak akses VIP
+    // 2. Loop Deteksi & Gambar
+    async function detectFrame() {
+        if (!model) return;
 
-        let bot = { x: 7.5, y: 4.5, hp: 100, speedX: 0.02, speedY: 0.02 };
-        let resolutionScale = 2.0; 
-
-        const weaponSpecs = {
-            AK47: { color: "#d4af37", damage: 34, hz: 260 },
-            M4A1: { color: "#00ffaa", damage: 30, hz: 300 },
-            AWM: { color: "#ff00a0", damage: 100, hz: 450 },
-            M1887: { color: "#a0a0a0", damage: 50, hz: 160 },
-            DEAGLE: { color: "#ffffff", damage: 55, hz: 320 },
-            GROZA: { color: "#ff7700", damage: 38, hz: 280 },
-            M249: { color: "#00ffff", damage: 28, hz: 350 },
-            M79: { color: "#ff0033", damage: 85, hz: 120 }
-        };
-
-        const map = [
-            [1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,1,0,0,0,0,1],
-            [1,0,0,0,0,0,1,1,0,1],
-            [1,0,1,1,1,0,1,0,0,1],
-            [1,0,0,0,1,0,0,0,0,1],
-            [1,1,1,0,0,0,0,1,0,1],
-            [1,0,0,0,1,1,1,1,0,1],
-            [1,0,1,0,1,0,0,0,0,1],
-            [1,0,0,0,0,0,1,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1]
-        ];
-        const mapSize = 10;
-
-        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        let touchLookId = null, lastTouchX = 0, lastTouchY = 0;
-
-        // VERIFIKASI AKUN VIP (KHUSUS KAMU)
-        document.getElementById('btn-verify').addEventListener('click', () => {
-            const codeInput = document.getElementById('redeem-input').value;
-            if(codeInput === "VIPMODMENU31012008") {
-                isVerified = true;
-                gameActive = true;
-                document.getElementById('security-lock').style.display = "none";
-                document.getElementById('mod-menu-toggle').style.display = "flex"; 
-                initAudio();
-            } else {
-                alert("KODE REDEEM SALAH!");
-            }
-        });
-
-        // VERIFIKASI AKUN TAMU / LEGAL (UNTUK TEMANMU)
-        document.getElementById('btn-guest-login').addEventListener('click', () => {
-            isVerified = false;
-            gameActive = true;
-            // Kunci mati config cheat agar tidak bisa di-bypass lewat konsol
-            cheatConfig.espActive = false;
-            cheatConfig.magicBullet = false;
-            document.getElementById('security-lock').style.display = "none";
-            document.getElementById('mod-menu-toggle').style.display = "none"; 
-            initAudio();
-        });
-
-        // ACTION BUKA/TUTUP MOD MENU BULAT PELANGI
-        const menuToggle = document.getElementById('mod-menu-toggle');
-        const menuContent = document.getElementById('mod-menu-content');
-        menuToggle.addEventListener('click', () => {
-            if(!isVerified) return;
-            menuContent.style.display = (menuContent.style.display === "block") ? "none" : "block";
-        });
-
-        // ACTION PANEL SETTING GEAR (KANAN ATAS)
-        const gearToggle = document.getElementById('gear-toggle');
-        const graphicsPanel = document.getElementById('graphics-panel');
-        gearToggle.addEventListener('click', () => {
-            graphicsPanel.style.display = (graphicsPanel.style.display === "block") ? "none" : "block";
-        });
-
-        document.getElementById('graphics-select').addEventListener('change', (e) => {
-            let mode = e.target.value;
-            if(mode === "LOW") resolutionScale = 4.0;
-            if(mode === "MEDIUM") resolutionScale = 2.0;
-            if(mode === "HIGH") resolutionScale = 1.0;
-        });
-
-        document.getElementById('weapon-select').addEventListener('change', (e) => {
-            currentWeapon = e.target.value;
-            document.getElementById('hud-weapon').innerText = currentWeapon;
-            if(isScoped) ApplyScopeZoom();
-        });
-
-        document.getElementById('aim-target-select').addEventListener('change', (e) => {
-            if(!isVerified) return;
-            cheatConfig.aimTarget = e.target.value;
-        });
+        const predictions = await model.detect(video);
         
-        document.getElementById('btn-esp').addEventListener('click', (e) => {
-            if(!isVerified) return;
-            cheatConfig.espActive = !cheatConfig.espActive;
-            e.target.innerText = cheatConfig.espActive ? "ON" : "OFF";
-            e.target.className = cheatConfig.espActive ? "status-on" : "status-off";
-        });
-        
-        document.getElementById('btn-magic').addEventListener('click', (e) => {
-            if(!isVerified) return;
-            cheatConfig.magicBullet = !cheatConfig.magicBullet;
-            e.target.innerText = cheatConfig.magicBullet ? "ON" : "OFF";
-            e.target.className = cheatConfig.magicBullet ? "status-on" : "status-off";
-        });
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Bersihkan canvas
 
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        predictions.forEach((prediction, index) => {
+            // Hanya targetkan "person"
+            if (prediction.class === 'person') {
+                // prediction.bbox mengembalikan [x, y, width, height]
+                const [x, y, width, height] = prediction.bbox;
 
-        function playGunSound() {
-            if (!audioCtx) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            let osc = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-            let now = audioCtx.currentTime;
+                // Hitung estimasi jarak
+                const distanceInCm = (KNOWN_HEIGHT_CM * FOCAL_LENGTH) / height;
+                const distanceInMeters = (distanceInCm / 100).toFixed(2);
 
-            let baseHz = weaponSpecs[currentWeapon].hz;
-            osc.type = (currentWeapon === "M1887" || currentWeapon === "M79") ? 'square' : 'sawtooth';
-            
-            osc.frequency.setValueAtTime(baseHz, now);
-            osc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
-            gainNode.gain.setValueAtTime(0.4, now);
-            gainNode.gain.linearRampToValueAtTime(0.01, now + 0.15);
-            
-            osc.start(now); osc.stop(now + 0.15);
-        }
+                // --- Gambar Tampilan ESP ---
+                ctx.strokeStyle = ESP_COLOR_ENEMY;
+                ctx.lineWidth = 2;
+                // Balikkan koordinat x untuk efek cermin
+                const flippedX = canvas.width - (x + width);
 
-        // Rotasi Kamera Layar HP Kanan
-        window.addEventListener('touchstart', (e) => {
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                let t = e.changedTouches[i];
-                if (t.clientX > window.innerWidth / 2 && touchLookId === null) {
-                    touchLookId = t.identifier; lastTouchX = t.clientX; lastTouchY = t.clientY;
-                }
+                // Kotak Utama
+                ctx.strokeRect(flippedX, y, width, height);
+
+                // Gaya Kotak Tambahan (Pojok)
+                const cornerSize = 15;
+                ctx.beginPath();
+                // Kiri Atas
+                ctx.moveTo(flippedX, y + cornerSize); ctx.lineTo(flippedX, y); ctx.lineTo(flippedX + cornerSize, y);
+                // Kanan Atas
+                ctx.moveTo(flippedX + width - cornerSize, y); ctx.lineTo(flippedX + width, y); ctx.lineTo(flippedX + width, y + cornerSize);
+                // Kiri Bawah
+                ctx.moveTo(flippedX, y + height - cornerSize); ctx.lineTo(flippedX, y + height); ctx.lineTo(flippedX + cornerSize, y + height);
+                // Kanan Bawah
+                ctx.moveTo(flippedX + width - cornerSize, y + height); ctx.lineTo(flippedX + width, y + height); ctx.lineTo(flippedX + width, y + height - cornerSize);
+                ctx.stroke();
+
+                // --- Teks Info Gaya 'Cheat' ---
+                ctx.font = FONT_SETTINGS;
+                
+                // Balikkan koordinat teks kembali ke normal (non-cermin)
+                ctx.save();
+                ctx.scale(-1, 1);
+                ctx.fillStyle = ESP_COLOR_INFO;
+                const textYOffset = y - 10;
+                ctx.fillText(`TARGET: P${index+1} [EST_DST: ${distanceInMeters}M]`, -(flippedX + width), textYOffset);
+                ctx.restore();
             }
-        }, {passive: true});
-
-        window.addEventListener('touchmove', (e) => {
-            for (let i = 0; i < e.touches.length; i++) {
-                let t = e.touches[i];
-                if (t.identifier === touchLookId) {
-                    let sensitivity = isScoped ? 0.002 : 0.005;
-                    playerAngle -= (t.clientX - lastTouchX) * sensitivity;
-                    lastTouchX = t.clientX;
-                }
-            }
-        }, {passive: true});
-
-        window.addEventListener('touchend', (e) => {
-            for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === touchLookId) touchLookId = null; }
         });
 
-        // Kontrol D-Pad / Analog Kiri
-        const joyZone = document.getElementById('joystick-zone');
-        const joyStick = document.getElementById('joystick-stick');
-        let joyTouchId = null;
+        // Request frame berikutnya
+        requestAnimationFrame(detectFrame);
+    }
 
-        joyZone.addEventListener('touchstart', (e) => { joyTouchId = e.changedTouches[0].identifier; }, {passive: true});
-        joyZone.addEventListener('touchmove', (e) => {
-            if (joyTouchId === null) return;
-            let touch = Array.from(e.touches).find(t => t.identifier === joyTouchId); if (!touch) return;
-            let rect = joyZone.getBoundingClientRect();
-            let deltaX = touch.clientX - (rect.left + rect.width / 2);
-            let deltaY = touch.clientY - (rect.top + rect.height / 2);
-            let dist = Math.min(Math.sqrt(deltaX*deltaX + deltaY*deltaY), 35);
-            let angle = Math.atan2(deltaY, deltaX);
-
-            joyStick.style.left = (35 + Math.cos(angle) * dist) + 'px';
-            joyStick.style.top = (35 + Math.sin(angle) * dist) + 'px';
-            moveForward = deltaY < -10; moveBackward = deltaY > 10; moveLeft = deltaX < -10; moveRight = deltaX > 10;
-        }, {passive: true});
-
-        joyZone.addEventListener('touchend', () => {
-            joyTouchId = null; joyStick.style.left = '35px'; joyStick.style.top = '35px';
-            moveForward = moveBackward = moveLeft = moveRight = false;
-        });
-
-        document.getElementById('btn-shoot').addEventListener('touchstart', (e) => { e.preventDefault(); Tembak(); });
-        document.getElementById('btn-scope').addEventListener('touchstart', (e) => { e.preventDefault(); ToggleScope(); });
-
-        function ToggleScope() {
-            isScoped = !isScoped;
-            ApplyScopeZoom();
+    // 3. Main Init
+    async function init() {
+        console.log("Loading AI model...");
+        try {
+            model = await cocoSsd.load();
+            console.log("Model Loaded!");
+            statusBar.innerHTML = '[ SYSTEM ] ESP MODE: ACTIVE<br>[ STATUS ] MODEL: LOADED<br>[ RADAR  ] TRACKING...';
+            await setupWebcam();
+            detectFrame();
+        } catch (e) {
+            console.error('Gagal memuat model:', e);
+            statusBar.innerHTML = '[ ERR ] Model Gagal Dimuat';
         }
+    }
 
-        function ApplyScopeZoom() {
-            const scopeOverlay = document.getElementById('scope-overlay');
-            const sniperLines = document.getElementById('sniper-lines');
-            const crosshair = document.getElementById('crosshair');
-
-            if (isScoped) {
-                scopeOverlay.style.display = "block";
-                crosshair.style.display = "none";
-                if (currentWeapon === "AWM") {
-                    sniperLines.style.display = "block";
-                } else {
-                    sniperLines.style.display = "none";
-                }
-            } else {
-                scopeOverlay.style.display = "none";
-                sniperLines.style.display = "none";
-                crosshair.style.display = "block";
-            }
-        }
-
-        function Tembak() {
-            if(!gameActive) return;
-            playGunSound();
-            let dmg = weaponSpecs[currentWeapon].damage;
-            
-            let angleToBot = Math.atan2(bot.y - playerY, bot.x - playerX);
-            let diffAngle = playerAngle - angleToBot;
-            while (diffAngle < -Math.PI) diffAngle += Math.PI * 2;
-            while (diffAngle > Math.PI) diffAngle -= Math.PI * 2;
-
-            // PROTEKSI ANTI-CELLAH: Tamu dipaksa menembak lurus (0.18 rad), VIP bisa pake Magic Bullet (3.14 rad)
-            let allowedSpread = (isVerified && cheatConfig.magicBullet) ? 3.14 : 0.18;
-
-            if (Math.abs(diffAngle) < allowedSpread) {
-                bot.hp -= dmg;
-                if(bot.hp <= 0) {
-                    score++;
-                    document.getElementById('score').innerText = score;
-                    bot.x = 2 + Math.random() * 6;
-                    bot.y = 2 + Math.random() * 6;
-                    bot.hp = 100;
-                }
-            }
-        }
-
-        let lastTime = performance.now();
-        let frames = 0, lastFpsTime = 0;
-        let dmgCooldown = 0;
-
-        function gameLoop() {
-            requestAnimationFrame(gameLoop);
-            if (!gameActive) return;
-
-            // FORCED HARD LOCK SYSTEM (Mencegah Modifikasi Runtime via Console Log)
-            if(!isVerified) {
-                cheatConfig.espActive = false;
-                cheatConfig.magicBullet = false;
-            }
-
-            const now = performance.now();
-            let delta = (now - lastTime) / 1000; lastTime = now;
-
-            frames++;
-            if (now >= lastFpsTime + 1000) {
-                document.getElementById('fps-counter').innerText = frames;
-                frames = 0; lastFpsTime = now;
-            }
-
-            let moveSpeed = 3.2 * delta;
-            let nextX = playerX, nextY = playerY;
-
-            if (moveForward) { nextX += Math.cos(playerAngle) * moveSpeed; nextY += Math.sin(playerAngle) * moveSpeed; }
-            if (moveBackward) { nextX -= Math.cos(playerAngle) * moveSpeed; nextY -= Math.sin(playerAngle) * moveSpeed; }
-            if (moveLeft) { nextX += Math.sin(playerAngle) * moveSpeed; nextY -= Math.cos(playerAngle) * moveSpeed; }
-            if (moveRight) { nextX -= Math.cos(playerAngle) * moveSpeed; nextY += Math.cos(playerAngle) * moveSpeed; }
-
-            if (map[Math.floor(nextY)][Math.floor(nextX)] === 0) { playerX = nextX; playerY = nextY; }
-
-            bot.x += bot.speedX; bot.y += bot.speedY;
-            if (map[Math.floor(bot.y)][Math.floor(bot.x)] !== 0) { bot.speedX *= -1; bot.speedY *= -1; }
-
-            let dist = Math.sqrt((bot.x - playerX)**2 + (bot.y - playerY)**2);
-            if(dist < 1.2 && dmgCooldown <= 0) {
-                playerHP -= 20;
-                dmgCooldown = 1.0;
-                document.getElementById('player-hp').innerText = Math.max(0, playerHP);
-                if(playerHP <= 0) {
-                    alert("Game Over! Skor Anda: " + score);
-                    playerHP = 100; score = 0;
-                    document.getElementById('score').innerText = 0;
-                    document.getElementById('player-hp').innerText = 100;
-                    playerX = 2.5; playerY = 2.5;
-                }
-            }
-            if(dmgCooldown > 0) dmgCooldown -= delta;
-
-            // AIMBOT LOCK HANYA BEKERJA JIKA STATUS VIP AKTIF
-            if (isScoped && isVerified) {
-                let targetAngle = Math.atan2(bot.y - playerY, bot.x - playerX);
-                playerAngle = (cheatConfig.aimTarget === "HEAD") ? targetAngle + 0.015 : targetAngle;
-            }
-
-            // Raycasting Dunia 3D
-            ctx.fillStyle = "#0c0c16"; ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
-            ctx.fillStyle = "#161624"; ctx.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
-
-            const numRays = canvas.width;
-            let fov = Math.PI / 3; 
-            if (isScoped) {
-                fov = (currentWeapon === "AWM") ? (Math.PI / 14) : (Math.PI / 6); 
-            }
-
-            for (let i = 0; i < numRays; i += resolutionScale) {
-                let rayAngle = (playerAngle - fov / 2) + (i / numRays) * fov;
-                let distanceToWall = 0;
-                let hitWall = false;
-                let eyeX = Math.cos(rayAngle), eyeY = Math.sin(rayAngle);
-
-                while (!hitWall && distanceToWall < 16) {
-                    distanceToWall += 0.05;
-                    let testX = Math.floor(playerX + eyeX * distanceToWall);
-                    let testY = Math.floor(playerY + eyeY * distanceToWall);
-                    if (testX < 0 || testX >= mapSize || testY < 0 || testY >= mapSize) { hitWall = true; distanceToWall = 16; }
-                    else if (map[testY][testX] > 0) hitWall = true;
-                }
-
-                let ceiling = (canvas.height / 2) - canvas.height / distanceToWall;
-                let floor = canvas.height - ceiling;
-                ctx.fillStyle = `rgb(${Math.max(15, 130 - distanceToWall * 8)}, 0, 40)`;
-                ctx.fillRect(i, ceiling, resolutionScale, floor - ceiling);
-            }
-
-            // Render Target Bot
-            let angleToBot = Math.atan2(bot.y - playerY, bot.x - playerX);
-            let diffAngle = playerAngle - angleToBot;
-            while (diffAngle < -Math.PI) diffAngle += Math.PI * 2;
-            while (diffAngle > Math.PI) diffAngle -= Math.PI * 2;
-
-            if (Math.abs(diffAngle) < fov) {
-                let botScreenX = (canvas.width / 2) - (canvas.width * (diffAngle / fov));
-                let botHeight = canvas.height / dist;
-                if(isScoped && currentWeapon === "AWM") botHeight = (canvas.height / dist) * 2.5; 
-                let botWidth = botHeight / 1.5;
-                let botScreenY = canvas.height / 2;
-
-                ctx.fillStyle = "#00ffff";
-                ctx.fillRect(botScreenX - botWidth / 2, botScreenY - botHeight / 2, botWidth, botHeight);
-
-                // ESP BOX RADAR HANYA DI-RENDER JIKA STATUS ADALAH USER VIP
-                if (isVerified && cheatConfig.espActive) {
-                    ctx.strokeStyle = "#ff0055"; ctx.lineWidth = 2;
-                    ctx.strokeRect(botScreenX - botWidth / 2 - 5, botScreenY - botHeight / 2 - 5, botWidth + 10, botHeight + 10);
-
-                    ctx.fillStyle = "#00ffff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center";
-                    ctx.fillText(`BOT [${bot.hp} HP] - ${Math.round(dist)}m`, botScreenX, botScreenY - botHeight / 2 - 25);
-
-                    ctx.fillStyle = "rgba(255,0,0,0.6)"; ctx.fillRect(botScreenX - botWidth / 2 - 5, botScreenY - botHeight / 2 - 15, botWidth + 10, 5);
-                    ctx.fillStyle = bot.hp > 40 ? "#00ff00" : "#ff3333";
-                    ctx.fillRect(botScreenX - botWidth / 2 - 5, botScreenY - botHeight / 2 - 15, (botWidth + 10) * (bot.hp / 100), 5);
-                }
-            }
-
-            if (!isScoped) {
-                ctx.fillStyle = weaponSpecs[currentWeapon].color;
-                ctx.fillRect(canvas.width * 0.68, canvas.height * 0.72, canvas.width * 0.07, canvas.height * 0.28);
-            }
-        }
-
-        gameLoop();
-    </script>
+    init();
+</script>
 </body>
 </html>
