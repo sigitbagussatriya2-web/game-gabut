@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP FPS Engine - Neon Mod Menu Edition</title>
+    <title>VIP FPS Labirin Engine - Scope Edition</title>
     <style>
-        body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; touch-action: none; }
+        body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; user-select: none; touch-action: none; background: #000; }
         canvas { display: block; }
         
-        /* Crosshair Tengah Layar */
+        /* Crosshair Normal */
         #crosshair {
             position: absolute; top: 50%; left: 50%;
             width: 6px; height: 6px; background: #00ff00;
@@ -16,10 +16,28 @@
             pointer-events: none; z-index: 10;
         }
 
-        /* Layar Utama Klik Start */
+        /* ---------- VISUAL OVERLAY SCOPE SNIPER ---------- */
+        #scope-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.92) 35%);
+            display: none; pointer-events: none; z-index: 12;
+        }
+        #scope-lens {
+            position: absolute; top: 50%; left: 50%;
+            width: 40vh; height: 40vh; border: 4px solid #333;
+            border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        }
+        /* Garis Bidik Merah di Dalam Scope */
+        #scope-lens::before, #scope-lens::after {
+            content: ''; position: absolute; background: rgba(255, 0, 85, 0.7);
+        }
+        #scope-lens::before { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
+        #scope-lens::after { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
+
         #instructions {
             position: absolute; width: 100%; height: 100%;
-            background: rgba(10, 10, 15, 0.9); color: white;
+            background: rgba(5, 5, 10, 0.95); color: white;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
             z-index: 20; cursor: pointer;
@@ -28,29 +46,27 @@
             padding: 12px 28px; background: #ff0055; color: white; 
             border: none; border-radius: 6px; font-weight: bold; 
             font-size: 16px; margin-top: 15px; cursor: pointer;
-            box-shadow: 0 0 10px #ff0055;
+            box-shadow: 0 0 15px #ff0055;
         }
 
-        /* HUD Skor Kiri Bawah */
         #hud {
             position: absolute; bottom: 20px; left: 20px;
-            color: white; background: rgba(5, 5, 10, 0.75);
+            color: white; background: rgba(5, 5, 10, 0.85);
             padding: 12px 18px; border-radius: 8px; pointer-events: none; z-index: 15;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px;
         }
 
-        /* ---------- ANIMASI LAMPU NEON WARNA WARNI (RGB WAVE) ---------- */
         @keyframes neonRGB {
-            0% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 15px #ff0055; }
-            33% { color: #00ff00; text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00; }
-            66% { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 15px #00ffff; }
-            100% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 15px #ff0055; }
+            0% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 12px #ff0055; }
+            33% { color: #00ff00; text-shadow: 0 0 5px #00ff00, 0 0 12px #00ff00; }
+            66% { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 12px #00ffff; }
+            100% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 12px #ff0055; }
         }
 
-        /* ---------- GUI MOD MENU (KIRI ATAS) ---------- */
+        /* ---------- GUI MOD MENU ---------- */
         #mod-menu {
             position: absolute; top: 15px; left: 15px;
-            width: 190px; background: rgba(10, 10, 15, 0.95);
+            width: 200px; background: rgba(10, 10, 15, 0.95);
             border: 2px solid #ff0055; border-radius: 8px;
             color: white; padding: 12px; z-index: 30;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
@@ -61,7 +77,7 @@
             font-family: 'Courier New', Courier, monospace;
             letter-spacing: 3px; animation: neonRGB 4s infinite linear;
         }
-        .menu-item { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .menu-item { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
         .menu-item select, .menu-item button { 
             background: #111; color: #fff; border: 1px solid #ff0055; 
             padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold;
@@ -72,7 +88,7 @@
         /* ESP Box Overlay 2D */
         #esp-box { position: absolute; border: 2px solid #00ffff; display: none; pointer-events: none; z-index: 5; box-shadow: 0 0 8px #00ffff; }
 
-        /* ---------- KONTROL HUD HP (MOBILE ONLY) ---------- */
+        /* ---------- KONTROL HUD HP ---------- */
         .mobile-btn {
             position: absolute; width: 65px; height: 65px;
             background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.5);
@@ -87,7 +103,6 @@
         #btn-jump { right: 40px; bottom: 30px; }
         #btn-crouch { right: 130px; bottom: 30px; }
 
-        /* Virtual Joystick (Analog Kiri HP) */
         #joystick-zone {
             position: absolute; left: 40px; bottom: 40px;
             width: 110px; height: 110px; background: rgba(255,255,255,0.08);
@@ -102,20 +117,34 @@
 <body>
 
     <div id="crosshair"></div>
+    
+    <div id="scope-overlay"><div id="scope-lens"></div></div>
+    
     <div id="esp-box"></div>
     
     <div id="instructions">
-        <h1 style="font-size: 36px; color: #ff0055; margin: 0;">MOBILE & PC AIM LAB</h1>
-        <p style="color: #aaa; max-width: 400px; font-size: 14px; margin: 10px 0;">
-            <b>PC:</b> WASD untuk Jalan, Geser Mouse untuk Bidik, Klik Kiri Tembak, Tahan Klik Kanan Aimbot.<br><br>
-            <b>HP:</b> Analog Kiri Jalan, Geser Layar Kanan untuk Bidik, Gunakan Tombol HUD Layar.
+        <h1 style="font-size: 32px; color: #ff0055; margin: 0; animation: neonRGB 4s infinite linear;">LABIRIN MULTI-WEAPON SIMULATOR</h1>
+        <p style="color: #aaa; max-width: 450px; font-size: 13px; margin: 10px 0;">
+            Jelajahi labirin, ganti senjata sesukamu, dan tembak robot patroli cyber dengan bantuan VIP Mod Menu.
         </p>
-        <button id="start-btn">MASUK GAME</button>
+        <button id="start-btn">MASUK ARENA</button>
     </div>
 
     <div id="mod-menu">
         <div class="neon-logo">MOD v2.0</div>
-        <hr style="border:0; border-top: 1px dashed rgba(255,255,255,0.15); margin-bottom: 10px;">
+        <hr style="border:0; border-top: 1px dashed rgba(255,255,255,0.15); margin-bottom: 8px;">
+        <div class="menu-item">
+            <span>Pilih Senjata:</span>
+            <select id="weapon-select">
+                <option value="AK47">AK-47</option>
+                <option value="M4A1">M4A1</option>
+                <option value="M14">M14</option>
+                <option value="AWM">AWM (Sniper)</option>
+                <option value="BARRETT">BARRETT (Heavy)</option>
+                <option value="M1887">M1887 (Shotgun)</option>
+                <option value="DEAGLE">DESERT EAGLE</option>
+            </select>
+        </div>
         <div class="menu-item">
             <span>Aimbot Lock:</span>
             <select id="aim-target-select"><option value="HEAD">HEAD</option><option value="BODY">BODY</option></select>
@@ -125,8 +154,9 @@
     </div>
 
     <div id="hud">
+        Senjata: <span id="hud-weapon" style="color:#ff0055; font-weight:bold;">AK47</span><br>
         Skor: <span id="score" style="color:#00ff00; font-weight:bold;">0</span><br>
-        Jarak: <span id="distance">0</span>m
+        Jarak Target: <span id="distance">0</span>m
     </div>
 
     <div id="joystick-zone"><div id="joystick-stick"></div></div>
@@ -138,22 +168,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        let scene, camera, renderer, enemy, obstacleWall;
+        let scene, camera, renderer, enemyBot, wallGroup, gunMesh;
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let yaw = 0, pitch = 0, score = 0;
-        let playerHeight = 2.0;
+        let playerHeight = 1.8;
 
-        // States
+        // States & Weapon Configurations
         let isScoped = false, isCrouching = false;
+        let currentWeapon = "AK47";
         let cheatConfig = { aimTarget: "HEAD", espActive: false, magicBullet: false, aimbotPressed: false };
 
-        // Physics (Lompat & Gravitasi)
-        let verticalVelocity = 0, isGrounded = true;
+        const weaponSpecs = {
+            AK47: { color: 0x8B4513, length: 1.5, width: 0.12 },
+            M4A1: { color: 0x2F4F4F, length: 1.4, width: 0.14 },
+            M14: { color: 0x556B2F, length: 1.6, width: 0.10 },
+            AWM: { color: 0x006400, length: 2.0, width: 0.13 },
+            BARRETT: { color: 0x1C1C1C, length: 2.4, width: 0.18 },
+            M1887: { color: 0x708090, length: 1.1, width: 0.20 },
+            DEAGLE: { color: 0xC0C0C0, length: 0.6, width: 0.15 }
+        };
 
-        // Mobile Look Touches
+        const mapData = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,0,1,0,0,1],
+            [1,0,1,0,1,0,1,1,1,1,0,1,0,1,1],
+            [1,0,1,0,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
+            [1,1,1,1,0,0,1,0,1,0,1,1,1,0,1],
+            [1,0,0,1,0,0,0,0,0,0,1,0,0,0,1],
+            [1,0,0,1,1,1,1,1,1,1,1,0,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+        const mapScale = 6;
+
+        let verticalVelocity = 0, isGrounded = true;
         let touchLookId = null, lastTouchX = 0, lastTouchY = 0;
 
-        // Aktifkan Fitur Mobile jika Terdeteksi Layar Sentuh
         function detectDevice() {
             if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
                 document.querySelectorAll('.mobile-btn').forEach(b => b.style.display = 'flex');
@@ -161,8 +213,12 @@
             }
         }
 
-        // Mod Menu Controller
         document.getElementById('aim-target-select').addEventListener('change', (e) => cheatConfig.aimTarget = e.target.value);
+        document.getElementById('weapon-select').addEventListener('change', (e) => {
+            currentWeapon = e.target.value;
+            document.getElementById('hud-weapon').innerText = currentWeapon;
+            BuildGunVisual();
+        });
         
         document.getElementById('btn-esp').addEventListener('click', (e) => {
             cheatConfig.espActive = !cheatConfig.espActive;
@@ -176,74 +232,55 @@
             e.target.className = cheatConfig.magicBullet ? "status-on" : "status-off";
         });
 
-        // Trigger Start Game
         instructions.addEventListener('click', () => {
             if (!('ontouchstart' in window)) document.body.requestPointerLock();
             instructions.style.display = 'none';
         });
 
-        // PC MOUSE LOOK
         document.addEventListener('mousemove', (e) => {
             if (document.pointerLockElement !== document.body || cheatConfig.aimbotPressed) return;
-            yaw -= e.movementX * 0.002;
-            pitch -= e.movementY * 0.002;
+            yaw -= e.movementX * 0.002; pitch -= e.movementY * 0.002;
             pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, pitch));
         });
 
-        // PC KEYBOARD INPUT
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'KeyW') moveForward = true;
-            if (e.code === 'KeyS') moveBackward = true;
-            if (e.code === 'KeyA') moveLeft = true;
-            if (e.code === 'KeyD') moveRight = true;
+            if (e.code === 'KeyW') moveForward = true; if (e.code === 'KeyS') moveBackward = true;
+            if (e.code === 'KeyA') moveLeft = true; if (e.code === 'KeyD') moveRight = true;
             if (e.code === 'Space' && isGrounded) Lompat();
             if (e.code === 'ControlLeft') Jongkok(true);
         });
         document.addEventListener('keyup', (e) => {
-            if (e.code === 'KeyW') moveForward = false;
-            if (e.code === 'KeyS') moveBackward = false;
-            if (e.code === 'KeyA') moveLeft = false;
-            if (e.code === 'KeyD') moveRight = false;
+            if (e.code === 'KeyW') moveForward = false; if (e.code === 'KeyS') moveBackward = false;
+            if (e.code === 'KeyA') moveLeft = false; if (e.code === 'KeyD') moveRight = false;
             if (e.code === 'ControlLeft') Jongkok(false);
         });
 
-        // HP MOBILE LOOK (Geser Sisi Kanan Layar)
+        // Touch Look HP
         window.addEventListener('touchstart', (e) => {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 let t = e.changedTouches[i];
                 if (t.clientX > window.innerWidth / 2 && touchLookId === null) {
-                    // Hindari area tombol menu kiri atas dan tombol hud kanan bawah
-                    if(t.clientY < 180 && t.clientX < 220) return; 
-                    touchLookId = t.identifier;
-                    lastTouchX = t.clientX;
-                    lastTouchY = t.clientY;
+                    if(t.clientY < 220 && t.clientX < 240) return; 
+                    touchLookId = t.identifier; lastTouchX = t.clientX; lastTouchY = t.clientY;
                 }
             }
         });
-
         window.addEventListener('touchmove', (e) => {
             if (cheatConfig.aimbotPressed) return;
             for (let i = 0; i < e.touches.length; i++) {
                 let t = e.touches[i];
                 if (t.identifier === touchLookId) {
-                    let diffX = t.clientX - lastTouchX;
-                    let diffY = t.clientY - lastTouchY;
-                    yaw -= diffX * 0.004;
-                    pitch -= diffY * 0.004;
+                    yaw -= (t.clientX - lastTouchX) * 0.004; pitch -= (t.clientY - lastTouchY) * 0.004;
                     pitch = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, pitch));
-                    lastTouchX = t.clientX;
-                    lastTouchY = t.clientY;
+                    lastTouchX = t.clientX; lastTouchY = t.clientY;
                 }
             }
         });
-
         window.addEventListener('touchend', (e) => {
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === touchLookId) touchLookId = null;
-            }
+            for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === touchLookId) touchLookId = null; }
         });
 
-        // HP VIRTUAL ANALOG (Sisi Kiri Layar)
+        // Joystick Analog HP
         const joyZone = document.getElementById('joystick-zone');
         const joyStick = document.getElementById('joystick-stick');
         let joyTouchId = null;
@@ -251,126 +288,187 @@
         joyZone.addEventListener('touchstart', (e) => { joyTouchId = e.changedTouches[0].identifier; });
         joyZone.addEventListener('touchmove', (e) => {
             if (joyTouchId === null) return;
-            let touch = Array.from(e.touches).find(t => t.identifier === joyTouchId);
-            if (!touch) return;
-
+            let touch = Array.from(e.touches).find(t => t.identifier === joyTouchId); if (!touch) return;
             let rect = joyZone.getBoundingClientRect();
-            let centerX = rect.left + rect.width / 2;
-            let centerY = rect.top + rect.height / 2;
-
-            let deltaX = touch.clientX - centerX;
-            let deltaY = touch.clientY - centerY;
+            let deltaX = touch.clientX - (rect.left + rect.width / 2);
+            let deltaY = touch.clientY - (rect.top + rect.height / 2);
             let dist = Math.min(Math.sqrt(deltaX*deltaX + deltaY*deltaY), 40);
             let angle = Math.atan2(deltaY, deltaX);
 
             joyStick.style.left = (40 + Math.cos(angle) * dist) + 'px';
             joyStick.style.top = (40 + Math.sin(angle) * dist) + 'px';
-
-            moveForward = deltaY < -15;
-            moveBackward = deltaY > 15;
-            moveLeft = deltaX < -15;
-            moveRight = deltaX > 15;
+            moveForward = deltaY < -15; moveBackward = deltaY > 15; moveLeft = deltaX < -15; moveRight = deltaX > 15;
         });
         joyZone.addEventListener('touchend', () => {
             joyTouchId = null; joyStick.style.left = '40px'; joyStick.style.top = '40px';
             moveForward = moveBackward = moveLeft = moveRight = false;
         });
 
-        // HP BUTTONS EVENT LISTENERS
+        // HP Actions Callbacks
         document.getElementById('btn-shoot').addEventListener('touchstart', (e) => { e.preventDefault(); Tembak(); });
         document.getElementById('btn-scope').addEventListener('touchstart', (e) => { e.preventDefault(); ToggleScope(); });
         document.getElementById('btn-jump').addEventListener('touchstart', (e) => { e.preventDefault(); if(isGrounded) Lompat(); });
-        
-        let crouchMobileState = false;
-        document.getElementById('btn-crouch').addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            crouchMobileState = !crouchMobileState;
-            Jongkok(crouchMobileState);
-        });
+        let crouchMob = false;
+        document.getElementById('btn-crouch').addEventListener('touchstart', (e) => { e.preventDefault(); crouchMob = !crouchMob; Jongkok(crouchMob); });
 
-        // PC MOUSE CLICK
+        // PC MOUSE CLICK (Klik Kanan untuk Scope PC)
         document.addEventListener('mousedown', (e) => { 
             if(document.pointerLockElement === document.body) {
-                if(e.button === 0) Tembak();
-                if(e.button === 2) cheatConfig.aimbotPressed = true;
+                if(e.button === 0) Tembak(); 
+                if(e.button === 2) ToggleScope(); // Klik kanan PC ganti untuk Scope toggle
             }
         });
-        document.addEventListener('mouseup', (e) => { if(e.button === 2) cheatConfig.aimbotPressed = false; });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        // INITIALIZE GAME WORLD
         init();
         detectDevice();
         animate();
 
         function init() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x05050d);
+            scene.background = new THREE.Color(0x020205);
+            scene.fog = new THREE.FogExp2(0x020205, 0.025);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.y = playerHeight;
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
+            camera.position.set(mapScale * 1.5, playerHeight, mapScale * 1.5);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-            let dLight = new THREE.DirectionalLight(0xffffff, 0.6); dLight.position.set(5, 15, 5); scene.add(dLight);
-            
-            // Grid Pembatas Map (Neon Pink)
-            scene.add(new THREE.GridHelper(100, 40, 0xff0055, 0x222233));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+            let dLight = new THREE.DirectionalLight(0xffffff, 0.5); dLight.position.set(20, 40, 20); scene.add(dLight);
 
-            // Tembok Penghalang
-            obstacleWall = new THREE.Mesh(new THREE.BoxGeometry(14, 6, 1), new THREE.MeshStandardMaterial({ color: 0x2c2c38, roughness:0.7 }));
-            obstacleWall.position.set(0, 3, -8); scene.add(obstacleWall);
+            // Lantai Map
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x111115, roughness: 0.6 }));
+            floor.rotation.x = -Math.PI/2; scene.add(floor);
+            scene.add(new THREE.GridHelper(200, 50, 0xff0055, 0x1a1a26));
 
-            // Musuh (Target)
-            enemy = new THREE.Mesh(new THREE.BoxGeometry(1.6, 3.2, 1.6), new THREE.MeshStandardMaterial({ color: 0x00ffff, roughness: 0.3 }));
-            RelocateEnemy(); scene.add(enemy);
+            // Labirin
+            wallGroup = new THREE.Group();
+            let wallGeo = new THREE.BoxGeometry(mapScale, 5, mapScale);
+            let wallMat = new THREE.MeshStandardMaterial({ color: 0x252530, roughness: 0.8 });
+
+            for(let r=0; r<mapData.length; r++) {
+                for(let c=0; c<mapData[r].length; c++) {
+                    if(mapData[r][c] === 1) {
+                        let wallMesh = new THREE.Mesh(wallGeo, wallMat);
+                        wallMesh.position.set(c * mapScale, 2.5, r * mapScale);
+                        wallGroup.add(wallMesh);
+                    }
+                }
+            }
+            scene.add(wallGroup);
+
+            // Robot Target
+            enemyBot = new THREE.Group();
+            let bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.2, 1.0), new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.8 }));
+            bodyMesh.position.y = 1.1; enemyBot.add(bodyMesh);
+
+            let headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 0.8), new THREE.MeshStandardMaterial({ color: 0x333 }));
+            headMesh.position.y = 2.4; enemyBot.add(headMesh);
+            let visorMesh = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.15, 0.82), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            visorMesh.position.set(0, 2.45, 0.05); enemyBot.add(visorMesh);
+
+            RelocateEnemy();
+            scene.add(enemyBot);
+
+            BuildGunVisual();
+        }
+
+        function BuildGunVisual() {
+            if(gunMesh) camera.remove(gunMesh);
+
+            // JIKA SEDANG SCOPE, SEMBUNYIKAN MODEL SENJATA AGAR TIDAK MENGHALANGI LAYAR LENS
+            if (isScoped) return;
+
+            let spec = weaponSpecs[currentWeapon];
+            gunMesh = new THREE.Group();
+
+            let barrelGeo = new THREE.CylinderGeometry(spec.width, spec.width, spec.length);
+            let barrelMat = new THREE.MeshStandardMaterial({ color: spec.color, metalness: 0.7, roughness: 0.3 });
+            let barrel = new THREE.Mesh(barrelGeo, barrelMat);
+            barrel.rotation.x = Math.PI / 2;
+            gunMesh.add(barrel);
+
+            if(currentWeapon === "AWM" || currentWeapon === "BARRETT") {
+                let scopeOpt = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.4), new THREE.MeshStandardMaterial({ color: 0x111 }));
+                scopeOpt.position.set(0, 0.15, -0.2); scopeOpt.rotation.x = Math.PI/2;
+                gunMesh.add(scopeOpt);
+            }
+
+            gunMesh.position.set(0.35, -0.35, -0.7);
+            camera.add(gunMesh);
+            scene.add(camera);
         }
 
         function RelocateEnemy() {
-            enemy.position.x = (Math.random() - 0.5) * 22;
-            enemy.position.z = -Math.random() * 16 - 10;
-            enemy.position.y = 1.6;
+            let validCoords = [];
+            for(let r=1; r<mapData.length-1; r++) {
+                for(let c=1; c<mapData[r].length-1; c++) {
+                    if(mapData[r][c] === 0) validCoords.push({r: r, c: c});
+                }
+            }
+            let choice = validCoords[Math.floor(Math.random() * validCoords.length)];
+            enemyBot.position.set(choice.c * mapScale, 0, choice.r * mapScale);
+            enemyBot.userData = { dirX: (Math.random() - 0.5) * 3, dirZ: (Math.random() - 0.5) * 3 };
         }
 
-        function Jongkok(active) {
-            isCrouching = active;
-            playerHeight = isCrouching ? 1.0 : 2.0;
-            document.getElementById('btn-crouch').style.background = isCrouching ? "rgba(0,255,50,0.4)" : "rgba(255,255,255,0.15)";
-        }
-
-        function Lompat() { verticalVelocity = 12; isGrounded = false; }
-
+        function Jongkok(active) { isCrouching = active; playerHeight = isCrouching ? 1.0 : 1.8; }
+        function Lompat() { verticalVelocity = 11; isGrounded = false; }
+        
+        // MODIFIKASI TOGGLE SCOPE KEKERAN
         function ToggleScope() {
             isScoped = !isScoped;
-            camera.fov = isScoped ? 32 : 75;
+            
+            // Zoom tingkat tinggi khusus Sniper AWM/Barrett (20 FOV), Senjata biasa (35 FOV)
+            let targetFOV = 35;
+            if(currentWeapon === "AWM" || currentWeapon === "BARRETT") targetFOV = 18;
+
+            camera.fov = isScoped ? targetFOV : 75;
             camera.updateProjectionMatrix();
+
+            // Sembunyikan atau Munculkan Laras Senjata 3D
+            BuildGunVisual();
+
+            // Munculkan / Sembunyikan Overlay Scope Hitam Silang Hitam di Layar
+            document.getElementById('scope-overlay').style.display = isScoped ? "block" : "none";
+            document.getElementById('crosshair').style.display = isScoped ? "none" : "block";
             document.getElementById('btn-scope').style.background = isScoped ? "rgba(0,255,50,0.4)" : "rgba(255,255,255,0.15)";
         }
 
         function Tembak() {
+            // Animasi Recoil (Hanya bekerja jika tidak lagi nge-scope)
+            if(gunMesh && !isScoped) {
+                gunMesh.position.z += 0.15;
+                setTimeout(() => { gunMesh.position.z = -0.7; }, 60);
+            }
+
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
 
-            // Modifikasi Jika Magic Bullet ON vs OFF
             if (cheatConfig.magicBullet) {
-                if (raycaster.intersectObject(enemy).length > 0) HitSuccess();
+                if (raycaster.intersectObjects(enemyBot.children).length > 0) HitSuccess();
             } else {
-                const hits = raycaster.intersectObjects([obstacleWall, enemy]);
-                if (hits.length > 0 && hits[0].object === enemy) HitSuccess();
+                let clickableObjects = [];
+                wallGroup.children.forEach(w => clickableObjects.push(w));
+                enemyBot.children.forEach(part => clickableObjects.push(part));
+
+                let hits = raycaster.intersectObjects(clickableObjects);
+                if (hits.length > 0 && enemyBot.children.includes(hits[0].object)) HitSuccess();
             }
         }
 
         function HitSuccess() {
             score++; document.getElementById('score').innerText = score;
-            enemy.material.color.setHex(0xff0055); 
-            setTimeout(() => { enemy.material.color.setHex(0x00ffff); }, 150);
+            enemyBot.children.forEach(part => part.material.color.setHex(0xff0055));
+            setTimeout(() => {
+                enemyBot.children[0].material.color.setHex(0x00ffff);
+                enemyBot.children[1].material.color.setHex(0x333333);
+            }, 150);
             RelocateEnemy();
         }
 
-        // MAIN GAME LOOP (60 FPS RENDER ENGINE)
         let lastTime = performance.now();
         const velocity = new THREE.Vector3();
         const direction = new THREE.Vector3();
@@ -380,54 +478,59 @@
             const time = performance.now();
             const delta = (time - lastTime) / 1000; lastTime = time;
 
-            // Physics Pergerakan Vertikal (Gravitasi & Lompatan)
             if (!isGrounded) {
-                verticalVelocity -= 32 * delta;
-                camera.position.y += verticalVelocity * delta;
-                if (camera.position.y <= playerHeight) {
-                    camera.position.y = playerHeight; verticalVelocity = 0; isGrounded = true;
-                }
+                verticalVelocity -= 30 * delta; camera.position.y += verticalVelocity * delta;
+                if (camera.position.y <= playerHeight) { camera.position.y = playerHeight; verticalVelocity = 0; isGrounded = true; }
             } else {
-                camera.position.y += (playerHeight - camera.position.y) * 15 * delta; // Smooth transisi jongkok
+                camera.position.y += (playerHeight - camera.position.y) * 15 * delta;
             }
 
-            // LOGIKA AIMBOT CORE (Locking System)
-            // Di HP, jika tombol scope aktif, ia juga otomatis memicu Aimbot untuk kemudahan bermain
-            if (cheatConfig.aimbotPressed || (isScoped && 'ontouchstart' in window)) {
-                let targetPos = enemy.position.clone();
-                if (cheatConfig.aimTarget === "HEAD") targetPos.y += 1.3; // Lock Kepala
-
-                let dirToEnemy = new THREE.Vector3().subVectors(targetPos, camera.position).normalize();
-                yaw = Math.atan2(-dirToEnemy.x, -dirToEnemy.z);
-                pitch = Math.atan2(dirToEnemy.y, Math.sqrt(dirToEnemy.x * dirToEnemy.x + dirToEnemy.z * dirToEnemy.z));
+            // Patroli Robot
+            if(enemyBot && enemyBot.userData.dirX) {
+                enemyBot.position.x += enemyBot.userData.dirX * delta;
+                enemyBot.position.z += enemyBot.userData.dirZ * delta;
+                let maxBounds = mapScale * 13;
+                if(enemyBot.position.x < mapScale || enemyBot.position.x > maxBounds) enemyBot.userData.dirX *= -1;
+                if(enemyBot.position.z < mapScale || enemyBot.position.z > maxBounds) enemyBot.userData.dirZ *= -1;
+                enemyBot.rotation.y = Math.atan2(enemyBot.userData.dirX, enemyBot.userData.dirZ);
             }
 
-            // Terapkan Rotasi Kamera
+            // AUTO AIMBOT JIKA SCOPE AKTIF (Mempermudah Aim di Layar Sentuh HP)
+            if (isScoped || cheatConfig.aimbotPressed) {
+                let lockPos = enemyBot.position.clone();
+                lockPos.y += (cheatConfig.aimTarget === "HEAD") ? 2.4 : 1.1;
+
+                let dir = new THREE.Vector3().subVectors(lockPos, camera.position).normalize();
+                yaw = Math.atan2(-dir.x, -dir.z);
+                pitch = Math.atan2(dir.y, Math.sqrt(dir.x * dir.x + dir.z * dir.z));
+            }
+
             camera.quaternion.copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')));
 
-            // Kalkulasi Arah Gerak WASD / Analog
             velocity.x -= velocity.x * 10.0 * delta; velocity.z -= velocity.z * 10.0 * delta;
             direction.z = Number(moveForward) - Number(moveBackward); direction.x = Number(moveRight) - Number(moveLeft);
             direction.normalize().applyEuler(new THREE.Euler(0, yaw, 0, 'YXZ'));
 
-            let speedMultiplier = isCrouching ? 50.0 : (isScoped ? 40.0 : 130.0);
-            if (moveForward || moveBackward) velocity.z -= direction.z * speedMultiplier * delta;
-            if (moveLeft || moveRight) velocity.x -= direction.x * speedMultiplier * delta;
+            let speed = isCrouching ? 45.0 : (isScoped ? 30.0 : 120.0);
+            if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+            if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+            
             camera.position.addScaledVector(velocity, delta);
+            camera.position.x = Math.max(mapScale - 2, Math.min(mapScale * 14, camera.position.x));
+            camera.position.z = Math.max(mapScale - 2, Math.min(mapScale * 10, camera.position.z));
 
-            // Perbarui Indikator Jarak Target di HUD
-            let dist = camera.position.distanceTo(enemy.position);
+            let dist = camera.position.distanceTo(enemyBot.position);
             document.getElementById('distance').innerText = Math.round(dist);
 
-            // LOGIKA VISUALISASI ESP BOX
+            // ESP Box Wallhack
             const espBox = document.getElementById('esp-box');
             if (cheatConfig.espActive) {
-                let tempV = enemy.position.clone(); tempV.project(camera);
+                let tempV = enemyBot.position.clone(); tempV.y += 1.1; tempV.project(camera);
                 if (tempV.z <= 1) {
                     let x = (tempV.x * .5 + .5) * window.innerWidth; let y = (tempV.y * -.5 + .5) * window.innerHeight;
-                    let boxSize = (1 / dist) * 650;
-                    espBox.style.display = 'block'; espBox.style.left = (x - boxSize/2) + 'px'; espBox.style.top = (y - boxSize/2) + 'px';
-                    espBox.style.width = boxSize + 'px'; espBox.style.height = (boxSize * 1.5) + 'px';
+                    let boxSize = (1 / dist) * 700;
+                    espBox.style.display = 'block'; espBox.style.left = (x - boxSize/2) + 'px'; espBox.style.top = (y - boxSize/1.5) + 'px';
+                    espBox.style.width = boxSize + 'px'; espBox.style.height = (boxSize * 1.8) + 'px';
                 } else { espBox.style.display = 'none'; }
             } else { espBox.style.display = 'none'; }
 
