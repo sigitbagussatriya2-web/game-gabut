@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP FPS Labirin Engine - Sound FX Edition</title>
+    <title>VIP FPS Labirin - Pro Ultimate Edition v4.0</title>
     <style>
-        body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; user-select: none; touch-action: none; background: #000; }
-        canvas { display: block; }
+        body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: sans-serif; user-select: none; touch-action: none; background: #05050a; }
+        canvas { display: block; width: 100% !important; height: 100% !important; }
         
-        /* Crosshair Normal */
+        /* Crosshair */
         #crosshair {
             position: absolute; top: 50%; left: 50%;
             width: 6px; height: 6px; background: #00ff00;
@@ -16,141 +16,140 @@
             pointer-events: none; z-index: 10;
         }
 
-        /* OVERLAY SCOPE SNIPER */
+        /* Scope Overlay */
         #scope-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.95) 35%);
+            background: radial-gradient(circle, transparent 35%, rgba(0,0,0,0.95) 40%);
             display: none; pointer-events: none; z-index: 12;
         }
-        #scope-lens {
-            position: absolute; top: 50%; left: 50%;
-            width: 45vh; height: 45vh; border: 4px solid #333;
-            border-radius: 50%; transform: translate(-50%, -50%);
-        }
-        #scope-lens::before, #scope-lens::after { content: ''; position: absolute; background: rgba(255, 0, 85, 0.8); }
-        #scope-lens::before { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
-        #scope-lens::after { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
 
+        /* Start Screen */
         #instructions {
             position: absolute; width: 100%; height: 100%;
-            background: rgba(5, 5, 10, 0.95); color: white;
+            background: #05050a; color: white;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center; text-align: center;
-            z-index: 20; cursor: pointer;
+            z-index: 100; cursor: pointer;
         }
         #start-btn {
-            padding: 12px 28px; background: #ff0055; color: white; 
+            padding: 12px 30px; background: #ff0055; color: white; 
             border: none; border-radius: 6px; font-weight: bold; 
             font-size: 16px; margin-top: 15px; cursor: pointer;
-            box-shadow: 0 0 15px #ff0055;
+            box-shadow: 0 0 10px #ff0055;
         }
 
         #hud {
-            position: absolute; bottom: 20px; left: 20px;
-            color: white; background: rgba(5, 5, 10, 0.85);
-            padding: 12px 18px; border-radius: 8px; pointer-events: none; z-index: 15;
-            border: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px;
+            position: absolute; bottom: 15px; left: 15px;
+            color: white; background: rgba(0, 0, 0, 0.85);
+            padding: 12px; border-radius: 6px; pointer-events: none; z-index: 15;
+            font-size: 11px; border: 1px solid #333; line-height: 1.6;
+            min-width: 140px;
         }
 
-        @keyframes neonRGB {
-            0% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 12px #ff0055; }
-            33% { color: #00ff00; text-shadow: 0 0 5px #00ff00, 0 0 12px #00ff00; }
-            66% { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 12px #00ffff; }
-            100% { color: #ff0055; text-shadow: 0 0 5px #ff0055, 0 0 12px #ff0055; }
-        }
-
-        /* GUI MOD MENU */
+        /* GUI MOD MENU V4.0 */
         #mod-menu {
-            position: absolute; top: 15px; left: 15px;
-            width: 200px; background: rgba(10, 10, 15, 0.95);
-            border: 2px solid #ff0055; border-radius: 8px;
-            color: white; padding: 12px; z-index: 30;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            position: absolute; top: 10px; left: 10px;
+            width: 195px; background: rgba(5, 5, 10, 0.95);
+            border: 2px solid #ff0055; border-radius: 6px;
+            color: white; padding: 10px; z-index: 90;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
         }
-        .neon-logo {
-            margin: 0 0 5px 0; text-align: center; 
-            font-size: 22px; font-weight: 900;
-            font-family: 'Courier New', Courier, monospace;
-            letter-spacing: 3px; animation: neonRGB 4s infinite linear;
-        }
-        .menu-item { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+        .neon-logo { margin: 0 0 8px 0; text-align: center; font-size: 15px; font-weight: bold; color: #ff0055; letter-spacing: 1px; }
+        .menu-item { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
         .menu-item select, .menu-item button { 
-            background: #111; color: #fff; border: 1px solid #ff0055; 
+            background: #1a1a1a; color: #fff; border: 1px solid #ff0055; 
             padding: 3px 6px; border-radius: 4px; cursor: pointer; font-weight: bold;
+            outline: none;
         }
-        .status-on { color: #00ff00 !important; border-color: #00ff00 !important; }
-        .status-off { color: #ff3333 !important; border-color: #ff3333 !important; }
+        .status-on { color: #00ff00 !important; border-color: #00ff00 !important; background: rgba(0,255,0,0.15) !important; }
+        .status-off { color: #ff3333 !important; border-color: #ff3333 !important; background: rgba(255,0,0,0.15) !important; }
 
-        /* ESP Box Overlay 2D */
-        #esp-box { position: absolute; border: 2px solid #00ffff; display: none; pointer-events: none; z-index: 5; box-shadow: 0 0 8px #00ffff; }
+        /* ADVANCED ESP BOX SYSTEM */
+        #esp-container { position: absolute; display: none; pointer-events: none; z-index: 5; flex-direction: column; }
+        #esp-hp-bar-container { width: 100%; height: 5px; background: rgba(255,0,0,0.5); margin-bottom: 2px; border: 1px solid #000; border-radius: 2px; overflow: hidden; }
+        #esp-hp-bar { height: 100%; width: 100%; background: #00ff00; transition: width 0.1s ease; }
+        #esp-text-info { color: #00ffff; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000; text-align: center; margin-bottom: 2px; }
+        #esp-box { width: 100%; flex-grow: 1; border: 2px solid #00ffff; box-shadow: 0 0 5px #00ffff; }
 
-        /* KONTROL HUD HP */
+        /* Tombol Kontrol HP */
         .mobile-btn {
-            position: absolute; width: 65px; height: 65px;
-            background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.5);
+            position: absolute; width: 62px; height: 62px;
+            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%; color: white; display: none;
             justify-content: center; align-items: center;
-            font-weight: bold; font-size: 11px; z-index: 15; touch-action: none;
+            font-weight: bold; font-size: 11px; z-index: 80; touch-action: none;
         }
-        .mobile-btn:active { background: rgba(255, 255, 255, 0.4); border-color: #00ff00; }
+        .mobile-btn:active { background: rgba(255, 255, 255, 0.3); border-color: #ff0055; }
         
-        #btn-shoot { right: 30px; bottom: 115px; width: 80px; height: 80px; background: rgba(255, 50, 50, 0.3); border-color: #ff3333; font-size: 13px; }
-        #btn-scope { right: 130px; bottom: 125px; }
-        #btn-jump { right: 40px; bottom: 30px; }
-        #btn-crouch { right: 130px; bottom: 30px; }
+        #btn-shoot { right: 20px; bottom: 105px; width: 78px; height: 78px; background: rgba(255, 50, 50, 0.25); border-color: #ff3333; font-size: 12px; }
+        #btn-scope { right: 110px; bottom: 115px; }
+        #btn-jump { right: 25px; bottom: 25px; }
+        #btn-crouch { right: 110px; bottom: 25px; }
 
         #joystick-zone {
-            position: absolute; left: 40px; bottom: 40px;
-            width: 110px; height: 110px; background: rgba(255,255,255,0.08);
-            border-radius: 50%; display: none; z-index: 15; border: 1px solid rgba(255,255,255,0.2);
+            position: absolute; left: 30px; bottom: 30px;
+            width: 105px; height: 105px; background: rgba(255,255,255,0.04);
+            border-radius: 50%; display: none; z-index: 80; border: 1px solid rgba(255,255,255,0.1);
         }
         #joystick-stick {
-            position: absolute; top: 40px; left: 40px;
-            width: 30px; height: 30px; background: rgba(255,255,255,0.7); border-radius: 50%;
+            position: absolute; top: 37px; left: 37px;
+            width: 30px; height: 30px; background: rgba(255,255,255,0.6); border-radius: 50%;
         }
     </style>
 </head>
 <body>
 
     <div id="crosshair"></div>
-    <div id="scope-overlay"><div id="scope-lens"></div></div>
-    <div id="esp-box"></div>
+    <div id="scope-overlay"></div>
+    
+    <div id="esp-container">
+        <div id="esp-text-info">BOT [100 HP] - 0m</div>
+        <div id="esp-hp-bar-container"><div id="esp-hp-bar"></div></div>
+        <div id="esp-box"></div>
+    </div>
     
     <div id="instructions">
-        <h1 style="font-size: 32px; color: #ff0055; margin: 0; animation: neonRGB 4s infinite linear;">LABIRIN MULTI-WEAPON SIMULATOR</h1>
-        <p style="color: #aaa; max-width: 450px; font-size: 13px; margin: 10px 0;">
-            Tekan tombol di bawah untuk menyalakan audio engine dan memuat arena labirin.
+        <h2 style="color: #ff0055; margin: 0; letter-spacing: 1px;">VIP ENGINE V4.0 FINAL</h2>
+        <p style="color: #aaa; font-size: 12px; margin: 8px 15px; max-width: 300px;">
+            Sistem Kesehatan Karakter & Radar Darah Musuh Aktif.
         </p>
         <button id="start-btn">MASUK ARENA</button>
     </div>
 
     <div id="mod-menu">
-        <div class="neon-logo">MOD v2.0</div>
-        <hr style="border:0; border-top: 1px dashed rgba(255,255,255,0.15); margin-bottom: 8px;">
+        <div class="neon-logo">VIP PANEL v4.0</div>
+        
         <div class="menu-item">
-            <span>Pilih Senjata:</span>
-            <select id="weapon-select">
-                <option value="AK47">AK-47</option>
-                <option value="M4A1">M4A1</option>
-                <option value="M14">M14</option>
-                <option value="AWM">AWM (Sniper)</option>
-                <option value="BARRETT">BARRETT (Heavy)</option>
-                <option value="M1887">M1887 (Shotgun)</option>
-                <option value="DEAGLE">DESERT EAGLE</option>
+            <span>Set Grafik:</span>
+            <select id="graphics-select">
+                <option value="LOW">LOW (HP Kentang)</option>
+                <option value="MEDIUM" selected>MEDIUM (Vivo V23e)</option>
+                <option value="HIGH">HIGH (Ultra HD)</option>
             </select>
         </div>
         <div class="menu-item">
-            <span>Aimbot Lock:</span>
+            <span>Senjata:</span>
+            <select id="weapon-select">
+                <option value="AK47">AK-47</option>
+                <option value="M4A1">M4A1</option>
+                <option value="AWM">AWM (Sniper)</option>
+                <option value="M1887">M1887</option>
+                <option value="DEAGLE">D.EAGLE</option>
+            </select>
+        </div>
+        <div class="menu-item">
+            <span>Aimbot:</span>
             <select id="aim-target-select"><option value="HEAD">HEAD</option><option value="BODY">BODY</option></select>
         </div>
-        <div class="menu-item"><span>ESP Box:</span><button id="btn-esp" class="status-off">OFF</button></div>
+        <div class="menu-item"><span>ESP Box + HP:</span><button id="btn-esp" class="status-off">OFF</button></div>
         <div class="menu-item"><span>Magic Bullet:</span><button id="btn-magic" class="status-off">OFF</button></div>
     </div>
 
     <div id="hud">
+        Darah Kita: <span id="player-hp" style="color:#00ff00; font-weight:bold;">100</span> HP<br>
         Senjata: <span id="hud-weapon" style="color:#ff0055; font-weight:bold;">AK47</span><br>
-        Skor: <span id="score" style="color:#00ff00; font-weight:bold;">0</span><br>
-        Jarak Target: <span id="distance">0</span>m
+        Skor Kill: <span id="score" style="color:#00ff00; font-weight:bold;">0</span><br>
+        Engine FPS: <span id="fps-counter" style="color:#00ffff; font-weight:bold;">--</span> Hz
     </div>
 
     <div id="joystick-zone"><div id="joystick-stick"></div></div>
@@ -164,39 +163,41 @@
     <script>
         let scene, camera, renderer, enemyBot, wallGroup, gunMesh;
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        let yaw = 0, pitch = 0, score = 0;
-        let playerHeight = 1.8;
-
+        let yaw = 0, pitch = 0, score = 0, playerHeight = 1.8;
         let isScoped = false, isCrouching = false;
         let currentWeapon = "AK47";
-        let cheatConfig = { aimTarget: "HEAD", espActive: false, magicBullet: false, aimbotPressed: false };
-        let audioCtx = null; // Menyiapkan Web Audio Engine
+        let currentGraphics = "MEDIUM";
+        
+        // Status Kesehatan Sistem
+        let playerHP = 100;
+        let enemyHP = 100;
+        
+        let cheatConfig = { aimTarget: "HEAD", espActive: false, magicBullet: false };
+        let audioCtx = null;
+        let lastFpsUpdate = 0, framesCount = 0;
 
+        // Spesifikasi Senjata Terperinci dengan Damage Spasial
         const weaponSpecs = {
-            AK47: { color: 0xd4af37, length: 1.5, width: 0.12 },
-            M4A1: { color: 0x00ffaa, length: 1.4, width: 0.14 },
-            M14: { color: 0x00aaff, length: 1.6, width: 0.10 },
-            AWM: { color: 0xff00a0, length: 2.0, width: 0.13 },
-            BARRETT: { color: 0xff5500, length: 2.4, width: 0.18 },
-            M1887: { color: 0xa0a0a0, length: 1.1, width: 0.20 },
-            DEAGLE: { color: 0xffffff, length: 0.6, width: 0.15 }
+            AK47: { color: 0xd4af37, length: 1.2, width: 0.09, damage: 34 },
+            M4A1: { color: 0x00ffaa, length: 1.1, width: 0.10, damage: 30 },
+            AWM: { color: 0xff00a0, length: 1.6, width: 0.11, damage: 100 },
+            M1887: { color: 0xa0a0a0, length: 0.9, width: 0.14, damage: 50 },
+            DEAGLE: { color: 0xffffff, length: 0.5, width: 0.11, damage: 55 }
         };
 
         const mapData = [
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,1,0,0,0,0,0,0,1,0,0,1],
-            [1,0,1,0,1,0,1,1,1,1,0,1,0,1,1],
-            [1,0,1,0,0,0,0,0,0,1,0,0,0,0,1],
-            [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
-            [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
-            [1,1,1,1,0,0,1,0,1,0,1,1,1,0,1],
-            [1,0,0,1,0,0,0,0,0,0,1,0,0,0,1],
-            [1,0,0,1,1,1,1,1,1,1,1,0,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,0,0,1,1,0,1],
+            [1,0,1,1,1,0,1,0,0,1],
+            [1,0,0,0,1,0,1,0,1,1],
+            [1,1,1,0,0,0,0,0,0,1],
+            [1,0,0,0,1,1,1,1,0,1],
+            [1,0,1,0,1,0,0,0,0,1],
+            [1,0,0,0,0,0,1,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1]
         ];
         const mapScale = 6;
-
         let verticalVelocity = 0, isGrounded = true;
         let touchLookId = null, lastTouchX = 0, lastTouchY = 0;
 
@@ -207,66 +208,59 @@
             }
         }
 
-        // INIT AUDIO CONTEXT PAS USER KLIK START
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playGunSound() {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+            let now = audioCtx.currentTime;
+
+            if (currentWeapon === "AK47" || currentWeapon === "M4A1") {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(260, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+                gainNode.gain.setValueAtTime(0.3, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (currentWeapon === "AWM") {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(20, now + 0.4);
+                gainNode.gain.setValueAtTime(0.6, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (currentWeapon === "M1887") {
+                osc.type = 'square'; osc.frequency.setValueAtTime(160, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
+                gainNode.gain.setValueAtTime(0.5, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (currentWeapon === "DEAGLE") {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.08);
+                gainNode.gain.setValueAtTime(0.4, now); gainNode.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now); osc.stop(now + 0.08);
             }
         }
 
-        // --- SYNTHESIZER SOUND GUN GENERATOR ---
-        function playGunSound() {
-            if (!audioCtx) return;
-            
-            // Aktifkan kembali audio context jika status suspens (keamanan browser)
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
+        document.getElementById('graphics-select').addEventListener('change', (e) => {
+            currentGraphics = e.target.value;
+            ApplyGraphicsSettings();
+        });
+
+        function ApplyGraphicsSettings() {
+            if(!renderer || !wallGroup) return;
+            if(currentGraphics === "LOW") {
+                renderer.setPixelRatio(0.6);
+                wallGroup.children.forEach(wall => { if(wall.children[0]) wall.children[0].visible = false; });
+            } else if(currentGraphics === "MEDIUM") {
+                renderer.setPixelRatio(1.0); 
+                wallGroup.children.forEach(wall => { if(wall.children[0]) wall.children[0].visible = true; });
+            } else if(currentGraphics === "HIGH") {
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+                wallGroup.children.forEach(wall => { if(wall.children[0]) wall.children[0].visible = true; });
             }
-
-            let osc = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            let now = audioCtx.currentTime;
-
-            // Kustomisasi Frekuensi Suara Berdasarkan Senjata yang Dipilih
-            if (currentWeapon === "AK47" || currentWeapon === "M4A1" || currentWeapon === "M14") {
-                // Senapan Serbu (Rifle)
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(280, now);
-                osc.frequency.exponentialRampToValueAtTime(40, now + 0.12);
-                gainNode.gain.setValueAtTime(0.4, now);
-                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.12);
-                osc.start(now); osc.stop(now + 0.12);
-            } 
-            else if (currentWeapon === "AWM" || currentWeapon === "BARRETT") {
-                // Sniper Berat (Geledek Dentuman Panjang)
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.exponentialRampToValueAtTime(20, now + 0.45);
-                gainNode.gain.setValueAtTime(0.8, now);
-                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.45);
-                osc.start(now); osc.stop(now + 0.45);
-            } 
-            else if (currentWeapon === "M1887") {
-                // Shotgun (Ledakan Bass Pendek Melebar)
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(180, now);
-                osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
-                gainNode.gain.setValueAtTime(0.6, now);
-                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.18);
-                osc.start(now); osc.stop(now + 0.18);
-            } 
-            else if (currentWeapon === "DEAGLE") {
-                // Pistol Desert Eagle (Nyaring dan Padat)
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(350, now);
-                osc.frequency.exponentialRampToValueAtTime(60, now + 0.08);
-                gainNode.gain.setValueAtTime(0.5, now);
-                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.08);
-                osc.start(now); osc.stop(now + 0.08);
-            }
+            ResizeCanvas();
         }
 
         document.getElementById('aim-target-select').addEventListener('change', (e) => cheatConfig.aimTarget = e.target.value);
@@ -288,92 +282,70 @@
             e.target.className = cheatConfig.magicBullet ? "status-on" : "status-off";
         });
 
-        instructions.addEventListener('click', () => {
-            initAudio(); // Nyalakan audio system pas user klik masuk arena
-            if (!('ontouchstart' in window)) document.body.requestPointerLock();
-            instructions.style.display = 'none';
+        document.getElementById('instructions').addEventListener('click', () => {
+            initAudio();
+            document.getElementById('instructions').style.display = 'none';
+            ApplyGraphicsSettings();
         });
 
-        // INPUT MOVEMENT
-        document.addEventListener('mousemove', (e) => {
-            if (document.pointerLockElement !== document.body || cheatConfig.aimbotPressed) return;
-            yaw -= e.movementX * 0.003; pitch -= e.movementY * 0.003;
-            pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'KeyW') moveForward = true; if (e.code === 'KeyS') moveBackward = true;
-            if (e.code === 'KeyA') moveLeft = true; if (e.code === 'KeyD') moveRight = true;
-            if (e.code === 'Space' && isGrounded) Lompat();
-            if (e.code === 'ControlLeft') Jongkok(true);
-        });
-        document.addEventListener('keyup', (e) => {
-            if (e.code === 'KeyW') moveForward = false; if (e.code === 'KeyS') moveBackward = false;
-            if (e.code === 'KeyA') moveLeft = false; if (e.code === 'KeyD') moveRight = false;
-            if (e.code === 'ControlLeft') Jongkok(false);
-        });
-
-        // Touch Look HP
+        // Touch Control Engine Look Kamera
         window.addEventListener('touchstart', (e) => {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 let t = e.changedTouches[i];
                 if (t.clientX > window.innerWidth / 2 && touchLookId === null) {
-                    if(t.clientY < 220 && t.clientX < 240) return; 
                     touchLookId = t.identifier; lastTouchX = t.clientX; lastTouchY = t.clientY;
                 }
             }
-        });
+        }, {passive: true});
+
         window.addEventListener('touchmove', (e) => {
-            if (cheatConfig.aimbotPressed) return;
             for (let i = 0; i < e.touches.length; i++) {
                 let t = e.touches[i];
                 if (t.identifier === touchLookId) {
-                    yaw -= (t.clientX - lastTouchX) * 0.005; pitch -= (t.clientY - lastTouchY) * 0.005;
-                    pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+                    yaw -= (t.clientX - lastTouchX) * 0.007; pitch -= (t.clientY - lastTouchY) * 0.007;
+                    pitch = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, pitch));
                     lastTouchX = t.clientX; lastTouchY = t.clientY;
                 }
             }
-        });
+        }, {passive: true});
+
         window.addEventListener('touchend', (e) => {
             for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === touchLookId) touchLookId = null; }
         });
+        window.addEventListener('touchcancel', (e) => {
+            for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === touchLookId) touchLookId = null; }
+        });
 
-        // Joystick HP
+        // Joystick Move
         const joyZone = document.getElementById('joystick-zone');
         const joyStick = document.getElementById('joystick-stick');
         let joyTouchId = null;
 
-        joyZone.addEventListener('touchstart', (e) => { joyTouchId = e.changedTouches[0].identifier; });
+        joyZone.addEventListener('touchstart', (e) => { joyTouchId = e.changedTouches[0].identifier; }, {passive: true});
         joyZone.addEventListener('touchmove', (e) => {
             if (joyTouchId === null) return;
             let touch = Array.from(e.touches).find(t => t.identifier === joyTouchId); if (!touch) return;
             let rect = joyZone.getBoundingClientRect();
             let deltaX = touch.clientX - (rect.left + rect.width / 2);
             let deltaY = touch.clientY - (rect.top + rect.height / 2);
-            let dist = Math.min(Math.sqrt(deltaX*deltaX + deltaY*deltaY), 40);
+            let dist = Math.min(Math.sqrt(deltaX*deltaX + deltaY*deltaY), 35);
             let angle = Math.atan2(deltaY, deltaX);
 
-            joyStick.style.left = (40 + Math.cos(angle) * dist) + 'px';
-            joyStick.style.top = (40 + Math.sin(angle) * dist) + 'px';
-            moveForward = deltaY < -12; moveBackward = deltaY > 12; moveLeft = deltaX < -12; moveRight = deltaX > 12;
-        });
+            joyStick.style.left = (35 + Math.cos(angle) * dist) + 'px';
+            joyStick.style.top = (35 + Math.sin(angle) * dist) + 'px';
+            moveForward = deltaY < -10; moveBackward = deltaY > 10; moveLeft = deltaX < -10; moveRight = deltaX > 10;
+        }, {passive: true});
+
         joyZone.addEventListener('touchend', () => {
-            joyTouchId = null; joyStick.style.left = '40px'; joyStick.style.top = '40px';
+            joyTouchId = null; joyStick.style.left = '35px'; joyStick.style.top = '35px';
             moveForward = moveBackward = moveLeft = moveRight = false;
         });
 
         document.getElementById('btn-shoot').addEventListener('touchstart', (e) => { e.preventDefault(); Tembak(); });
         document.getElementById('btn-scope').addEventListener('touchstart', (e) => { e.preventDefault(); ToggleScope(); });
-        document.getElementById('btn-jump').addEventListener('touchstart', (e) => { e.preventDefault(); if(isGrounded) Lompat(); });
-        let crouchMob = false;
-        document.getElementById('btn-crouch').addEventListener('touchstart', (e) => { e.preventDefault(); crouchMob = !crouchMob; Jongkok(crouchMob); });
-
-        document.addEventListener('mousedown', (e) => { 
-            if(document.pointerLockElement === document.body) {
-                if(e.button === 0) Tembak(); if(e.button === 2) ToggleScope();
-            }
-        });
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.getElementById('btn-jump').addEventListener('touchstart', (e) => { e.preventDefault(); if(isGrounded) { verticalVelocity = 10; isGrounded = false; } });
+        let cmob = false;
+        document.getElementById('btn-crouch').addEventListener('touchstart', (e) => { e.preventDefault(); cmob = !cmob; isCrouching = cmob; playerHeight = isCrouching ? 1.0 : 1.8; });
 
         init();
         detectDevice();
@@ -381,52 +353,48 @@
 
         function init() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a16);
-            scene.fog = new THREE.FogExp2(0x0a0a16, 0.025);
+            scene.background = new THREE.Color(0x050510);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
             camera.position.set(mapScale * 1.5, playerHeight, mapScale * 1.5);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            let ambientLight = new THREE.AmbientLight(0xffffff, 1.2); scene.add(ambientLight);
-            let mainLight = new THREE.DirectionalLight(0xffffff, 1.0); mainLight.position.set(30, 60, 30); scene.add(mainLight);
+            let ambientLight = new THREE.AmbientLight(0xffffff, 1.6);
+            scene.add(ambientLight);
 
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({ color: 0x151525, roughness: 0.4 }));
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({ color: 0x111122 }));
             floor.rotation.x = -Math.PI/2; scene.add(floor);
-            scene.add(new THREE.GridHelper(300, 60, 0xff0055, 0x00ffaa));
+            
+            let grid = new THREE.GridHelper(200, 40, 0xff0055, 0x00ffff);
+            grid.position.y = 0.01; scene.add(grid);
 
-            // Generate Labirin
             wallGroup = new THREE.Group();
-            let wallGeo = new THREE.BoxGeometry(mapScale, 6, mapScale);
-            let wallMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.5 });
+            let wallGeo = new THREE.BoxGeometry(mapScale, 4, mapScale);
+            let wallMat = new THREE.MeshBasicMaterial({ color: 0xdddddd });
 
             for(let r=0; r<mapData.length; r++) {
                 for(let c=0; c<mapData[r].length; c++) {
                     if(mapData[r][c] === 1) {
                         let wallMesh = new THREE.Mesh(wallGeo, wallMat);
-                        wallMesh.position.set(c * mapScale, 3, r * mapScale);
-                        wallGroup.add(wallMesh);
+                        wallMesh.position.set(c * mapScale, 2, r * mapScale);
+                        let wire = new THREE.LineSegments(new THREE.EdgesGeometry(wallGeo), new THREE.LineBasicMaterial({ color: 0xff0055 }));
+                        wallMesh.add(wire); wallGroup.add(wallMesh);
                     }
                 }
             }
             scene.add(wallGroup);
 
-            // Robot Target
             enemyBot = new THREE.Group();
-            let bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.2, 1.0), new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.5 }));
-            bodyMesh.position.y = 1.1; enemyBot.add(bodyMesh);
-
-            let headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 0.8), new THREE.MeshStandardMaterial({ color: 0x222222 }));
-            headMesh.position.y = 2.4; enemyBot.add(headMesh);
-            let visorMesh = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.15, 0.82), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-            visorMesh.position.set(0, 2.45, 0.05); enemyBot.add(visorMesh);
+            let bMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.0, 0.9), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+            bMesh.position.y = 1.0; enemyBot.add(bMesh);
+            let hMesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.7), new THREE.MeshBasicMaterial({ color: 0x333333 }));
+            hMesh.position.y = 2.2; enemyBot.add(hMesh);
 
             RelocateEnemy();
             scene.add(enemyBot);
-
             BuildGunVisual();
         }
 
@@ -436,158 +404,172 @@
 
             let spec = weaponSpecs[currentWeapon];
             gunMesh = new THREE.Group();
+            let b = new THREE.Mesh(new THREE.CylinderGeometry(spec.width, spec.width, spec.length), new THREE.MeshBasicMaterial({ color: spec.color }));
+            b.rotation.x = Math.PI / 2; gunMesh.add(b);
 
-            let barrelGeo = new THREE.CylinderGeometry(spec.width, spec.width, spec.length);
-            let barrelMat = new THREE.MeshStandardMaterial({ color: spec.color, metalness: 0.8, roughness: 0.2 });
-            let barrel = new THREE.Mesh(barrelGeo, barrelMat);
-            barrel.rotation.x = Math.PI / 2;
-            gunMesh.add(barrel);
-
-            if(currentWeapon === "AWM" || currentWeapon === "BARRETT") {
-                let scopeOpt = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.4), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-                scopeOpt.position.set(0, 0.14, -0.2); scopeOpt.rotation.x = Math.PI/2;
-                gunMesh.add(scopeOpt);
-            }
-
-            gunMesh.position.set(0.28, -0.28, -0.6);
-            camera.add(gunMesh);
-            scene.add(camera);
+            gunMesh.position.set(0.25, -0.25, -0.5);
+            camera.add(gunMesh); scene.add(camera);
         }
 
         function RelocateEnemy() {
-            let validCoords = [];
+            let coords = [];
             for(let r=1; r<mapData.length-1; r++) {
-                for(let c=1; c<mapData[r].length-1; c++) {
-                    if(mapData[r][c] === 0) validCoords.push({r: r, c: c});
-                }
+                for(let c=1; c<mapData[r].length-1; c++) { if(mapData[r][c] === 0) coords.push({r:r, c:c}); }
             }
-            let choice = validCoords[Math.floor(Math.random() * validCoords.length)];
+            let choice = coords[Math.floor(Math.random() * coords.length)];
             enemyBot.position.set(choice.c * mapScale, 0, choice.r * mapScale);
-            enemyBot.userData = { dirX: (Math.random() - 0.5) * 4, dirZ: (Math.random() - 0.5) * 4 };
+            enemyBot.userData = { dirX: (Math.random() - 0.5) * 3, dirZ: (Math.random() - 0.5) * 3 };
+            enemyHP = 100; // Reset Darah Musuh saat respawn baru
+            UpdateEspHPBar();
         }
 
-        function Jongkok(active) { isCrouching = active; playerHeight = isCrouching ? 0.9 : 1.8; }
-        function Lompat() { verticalVelocity = 11; isGrounded = false; }
-        
         function ToggleScope() {
             isScoped = !isScoped;
-            let targetFOV = (currentWeapon === "AWM" || currentWeapon === "BARRETT") ? 18 : 35;
-            camera.fov = isScoped ? targetFOV : 75;
+            camera.fov = isScoped ? ((currentWeapon==="AWM")?20:35) : 70;
             camera.updateProjectionMatrix();
-
             BuildGunVisual();
-
             document.getElementById('scope-overlay').style.display = isScoped ? "block" : "none";
             document.getElementById('crosshair').style.display = isScoped ? "none" : "block";
-            document.getElementById('btn-scope').style.background = isScoped ? "rgba(0,255,50,0.4)" : "rgba(255,255,255,0.15)";
         }
 
         function Tembak() {
-            // EKSEKUSI PEMUTARAN EFEK SUARA SENJATA
             playGunSound();
-
             if(gunMesh && !isScoped) {
-                gunMesh.position.z += 0.12;
-                setTimeout(() => { gunMesh.position.z = -0.6; }, 60);
+                gunMesh.position.z += 0.1; setTimeout(() => { gunMesh.position.z = -0.5; }, 60);
             }
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const ray = new THREE.Raycaster();
+            ray.setFromCamera(new THREE.Vector2(0, 0), camera);
+            let dmg = weaponSpecs[currentWeapon].damage;
 
             if (cheatConfig.magicBullet) {
-                if (raycaster.intersectObjects(enemyBot.children).length > 0) HitSuccess();
+                if (ray.intersectObjects(enemyBot.children).length > 0 || camera.position.distanceTo(enemyBot.position) < 30) {
+                    HitBot(dmg);
+                }
             } else {
-                let clickableObjects = [];
-                wallGroup.children.forEach(w => clickableObjects.push(w));
-                enemyBot.children.forEach(part => clickableObjects.push(part));
-
-                let hits = raycaster.intersectObjects(clickableObjects);
-                if (hits.length > 0 && enemyBot.children.includes(hits[0].object)) HitSuccess();
+                let targets = []; wallGroup.children.forEach(w => targets.push(w)); enemyBot.children.forEach(p => targets.push(p));
+                let hits = ray.intersectObjects(targets);
+                if (hits.length > 0 && enemyBot.children.includes(hits[0].object)) {
+                    HitBot(dmg);
+                }
             }
         }
 
-        function HitSuccess() {
-            score++; document.getElementById('score').innerText = score;
-            enemyBot.children.forEach(part => part.material.color.setHex(0xff0055));
-            setTimeout(() => {
-                enemyBot.children[0].material.color.setHex(0x00ffff);
-                enemyBot.children[1].material.color.setHex(0x222222);
-            }, 150);
-            RelocateEnemy();
+        function HitBot(dmgAmt) {
+            enemyHP -= dmgAmt;
+            UpdateEspHPBar();
+            if(enemyHP <= 0) {
+                score++; document.getElementById('score').innerText = score;
+                RelocateEnemy();
+            }
+        }
+
+        function UpdateEspHPBar() {
+            let hpBar = document.getElementById('esp-hp-bar');
+            if(hpBar) {
+                let pct = Math.max(0, enemyHP);
+                hpBar.style.width = pct + "%";
+                hpBar.style.background = pct > 40 ? "#00ff00" : "#ff3333";
+            }
         }
 
         let lastTime = performance.now();
-        const velocity = new THREE.Vector3();
-        const direction = new THREE.Vector3();
+        const vel = new THREE.Vector3(), dir = new THREE.Vector3();
+        let dmgCooldown = 0;
 
         function animate() {
             requestAnimationFrame(animate);
             const time = performance.now();
-            const delta = (time - lastTime) / 1000; lastTime = time;
+            let delta = Math.min((time - lastTime) / 1000, 0.1); lastTime = time;
+
+            framesCount++;
+            if (time >= lastFpsUpdate + 1000) {
+                document.getElementById('fps-counter').innerText = framesCount;
+                framesCount = 0; lastFpsUpdate = time;
+            }
 
             if (!isGrounded) {
-                verticalVelocity -= 30 * delta; camera.position.y += verticalVelocity * delta;
+                verticalVelocity -= 28 * delta; camera.position.y += verticalVelocity * delta;
                 if (camera.position.y <= playerHeight) { camera.position.y = playerHeight; verticalVelocity = 0; isGrounded = true; }
             } else {
-                camera.position.y += (playerHeight - camera.position.y) * 15 * delta;
+                camera.position.y += (playerHeight - camera.position.y) * 12 * delta;
             }
 
-            // Patroli Bot
-            if(enemyBot && enemyBot.userData.dirX) {
+            // Gerakan Bot Patrolling
+            if(enemyBot) {
                 enemyBot.position.x += enemyBot.userData.dirX * delta;
                 enemyBot.position.z += enemyBot.userData.dirZ * delta;
-                let maxBounds = mapScale * 13;
-                if(enemyBot.position.x < mapScale || enemyBot.position.x > maxBounds) enemyBot.userData.dirX *= -1;
-                if(enemyBot.position.z < mapScale || enemyBot.position.z > maxBounds) enemyBot.userData.dirZ *= -1;
-                enemyBot.rotation.y = Math.atan2(enemyBot.userData.dirX, enemyBot.userData.dirZ);
+                if(enemyBot.position.x < mapScale || enemyBot.position.x > mapScale*8) enemyBot.userData.dirX *= -1;
+                if(enemyBot.position.z < mapScale || enemyBot.position.z > mapScale*8) enemyBot.userData.dirZ *= -1;
             }
 
-            // Aimbot Trigger Locking
-            if (isScoped || cheatConfig.aimbotPressed) {
-                let lockPos = enemyBot.position.clone();
-                lockPos.y += (cheatConfig.aimTarget === "HEAD") ? 2.4 : 1.1;
+            // SISTEM PENGURANGAN DARAH KARAKTER (KITA) JIKA TERLALU DEKAT BOT
+            let dist = camera.position.distanceTo(enemyBot.position);
+            if (dist < 3.0 && dmgCooldown <= 0) {
+                playerHP -= 20;
+                dmgCooldown = 1.0; // Kebal selama 1 detik setelah terkena hit
+                let pHpElement = document.getElementById('player-hp');
+                pHpElement.innerText = Math.max(0, playerHP);
+                if(playerHP <= 0) {
+                    alert("Kamu Tereliminasi! Skor Akhir Kamu: " + score);
+                    playerHP = 100; score = 0;
+                    document.getElementById('score').innerText = score;
+                    pHpElement.innerText = "100";
+                    camera.position.set(mapScale * 1.5, playerHeight, mapScale * 1.5);
+                }
+            }
+            if(dmgCooldown > 0) dmgCooldown -= delta;
 
-                let dir = new THREE.Vector3().subVectors(lockPos, camera.position).normalize();
-                yaw = Math.atan2(-dir.x, -dir.z);
-                pitch = Math.atan2(dir.y, Math.sqrt(dir.x * dir.x + dir.z * dir.z));
+            // Fitur Aimbot
+            if (isScoped) {
+                let lock = enemyBot.position.clone();
+                lock.y += (cheatConfig.aimTarget === "HEAD") ? 2.2 : 1.0;
+                let d = new THREE.Vector3().subVectors(lock, camera.position).normalize();
+                yaw = Math.atan2(-d.x, -d.z);
+                pitch = Math.atan2(d.y, Math.sqrt(d.x*d.x + d.z*d.z));
             }
 
             camera.quaternion.copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ')));
 
-            velocity.x -= velocity.x * 10.0 * delta; velocity.z -= velocity.z * 10.0 * delta;
-            direction.z = Number(moveForward) - Number(moveBackward); direction.x = Number(moveRight) - Number(moveLeft);
-            direction.normalize().applyEuler(new THREE.Euler(0, yaw, 0, 'YXZ'));
+            vel.x -= vel.x * 8.0 * delta; vel.z -= vel.z * 8.0 * delta;
+            dir.z = Number(moveForward) - Number(moveBackward); dir.x = Number(moveRight) - Number(moveLeft);
+            dir.normalize().applyEuler(new THREE.Euler(0, yaw, 0, 'YXZ'));
 
-            let speed = isCrouching ? 45.0 : (isScoped ? 30.0 : 120.0);
-            if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
-            if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
-            
-            camera.position.addScaledVector(velocity, delta);
-            camera.position.x = Math.max(mapScale - 2, Math.min(mapScale * 14, camera.position.x));
-            camera.position.z = Math.max(mapScale - 2, Math.min(mapScale * 10, camera.position.z));
+            let speed = isCrouching ? 35.0 : 90.0;
+            if (moveForward || moveBackward) vel.z -= dir.z * speed * delta;
+            if (moveLeft || moveRight) vel.x -= dir.x * speed * delta;
+            camera.position.addScaledVector(vel, delta);
 
-            let dist = camera.position.distanceTo(enemyBot.position);
             document.getElementById('distance').innerText = Math.round(dist);
 
-            // ESP Box Update
-            const espBox = document.getElementById('esp-box');
+            // SINKRONISASI RADAR ESP BOX BESERTA SISA DARAH & JARAK
+            const espContainer = document.getElementById('esp-container');
             if (cheatConfig.espActive) {
-                let tempV = enemyBot.position.clone(); tempV.y += 1.1; tempV.project(camera);
-                if (tempV.z <= 1) {
-                    let x = (tempV.x * .5 + .5) * window.innerWidth; let y = (tempV.y * -.5 + .5) * window.innerHeight;
-                    let boxSize = (1 / dist) * 700;
-                    espBox.style.display = 'block'; espBox.style.left = (x - boxSize/2) + 'px'; espBox.style.top = (y - boxSize/1.5) + 'px';
-                    espBox.style.width = boxSize + 'px'; espBox.style.height = (boxSize * 1.8) + 'px';
-                } else { espBox.style.display = 'none'; }
-            } else { espBox.style.display = 'none'; }
+                let tempV = enemyBot.position.clone(); tempV.y += 1.0; tempV.project(camera);
+                if (tempV.z <= 1 && Math.abs(tempV.x) < 1 && Math.abs(tempV.y) < 1) {
+                    let x = (tempV.x * 0.5 + 0.5) * window.innerWidth; 
+                    let y = (tempV.y * -0.5 + 0.5) * window.innerHeight;
+                    let bSize = (1 / dist) * (window.innerHeight * 0.8);
+                    
+                    espContainer.style.display = 'flex'; 
+                    espContainer.style.left = (x - bSize/2) + 'px'; 
+                    espContainer.style.top = (y - bSize/1.2) + 'px';
+                    espContainer.style.width = bSize + 'px'; 
+                    espContainer.style.height = (bSize * 1.5) + 'px';
+                    
+                    document.getElementById('esp-text-info').innerText = "BOT [" + Math.max(0, enemyHP) + " HP] - " + Math.round(dist) + "m";
+                } else { espContainer.style.display = 'none'; }
+            } else { espContainer.style.display = 'none'; }
 
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
+        function ResizeCanvas() {
+            if(!camera || !renderer) return;
             camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        }
+        window.addEventListener('resize', ResizeCanvas);
     </script>
 </body>
 </html>
